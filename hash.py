@@ -1,4 +1,3 @@
-from unicodedata import decimal
 from genkey import *
 
 import hashlib

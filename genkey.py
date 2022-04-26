@@ -16,7 +16,7 @@ __smallp = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59,
 
 
 def createDummys(N): 
-    list = [];
+    list = []
     while len(list) < N:
         randomCharacter = secrets.choice(string.ascii_uppercase + string.digits + string.punctuation);
         if randomCharacter not in list:
@@ -26,14 +26,20 @@ def createDummys(N):
 def createPrimes(N):
     return __smallp[N:N+45]
 
+def genInvertedMatrix(k):
+    while True:
+        Matrix = np.random.randint(1,4,[k,k])
+        if np.linalg.matrix_rank(Matrix) == k:
+             return Matrix
+
 def genkey(k):
-    M1 = np.random.randint(0,2,[k,k])
-    M2 = np.random.randint(0,2,[k,k])
-    S = np.random.randint(0,2,[k])
+    M1 = genInvertedMatrix(k)
+    M2 = genInvertedMatrix(k)
+    S = np.random.randint(2,size=k)
     KF = secrets.token_bytes(int(k/8))
 
     sk = [M1,M2,S]
     Dummy = createDummys(45)
     Prime = createPrimes(np.random.randint(0, len(__smallp)-45))  
 
-    return [sk,KF,Dummy, Prime]
+    return (sk,KF,Dummy, Prime)
