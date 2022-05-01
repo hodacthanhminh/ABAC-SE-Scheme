@@ -3,14 +3,21 @@ from genkey import *
 from hash import *
 import numpy as np
 
-key_length = 2
+key_length = 5
 
 secret_key = genkey(key_length)
 
 ([M1,M2,S],kF,dummy,prime) = secret_key
 
-p = np.array([1/3,1/7])
-q = np.array([33,7])
+string_1 = "Thanhminh"
+string_2 = "Th**hminh"
+
+def createIndexVector(string, kF):
+    for i in string_1:
+        print(">>",hashF(kF,i))
+
+p = np.array([1/3,0, 0, 1/11,1/7])
+q = np.array([33,7, 11, 11, 17])
 
 print(">> sk[S]", S)
 print(">> sk[M1]", M1)
@@ -25,8 +32,6 @@ invert_M2 = np.linalg.inv(M2).reshape([key_length,key_length])
 transpose_M2 = np.transpose(M2).reshape([key_length,key_length])
 print(">> inverted sk[M2]",invert_M2)
 print(">> transpose sk[M2]",transpose_M2)
-
-
 
 
 def splitIndex(arr):
