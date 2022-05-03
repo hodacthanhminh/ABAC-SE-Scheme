@@ -2,6 +2,7 @@ import string
 import numpy as np
 import secrets
 import knn
+from CONSTANT import *
 
 __smallp = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59,
             61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139,
@@ -25,13 +26,13 @@ def createDummys(N):
     return list
 
 def createPrimes(N):
-    return __smallp[N:N+45]
+    return __smallp[N:N+L]
 
 
 def genkey(k):
-    sk = knn.key(k)
+    sk = knn.key(d)
     KF = secrets.token_bytes(int(k/8))
-    Dummy = createDummys(45)
-    Prime = createPrimes(np.random.randint(0, len(__smallp)-45))  
+    Dummies = createDummys(L)
+    Primes = createPrimes(np.random.randint(0, len(__smallp)-L))  
 
-    return (sk,KF,Dummy, Prime)
+    return (sk,KF,Dummies, Primes)
