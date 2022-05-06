@@ -46,7 +46,6 @@ def createPrimes(N):
 def padding(s, array):
     if (len(s) == L): return s
     string = ''.join(str(v) for v in array)
-    print(type(string), type(s))
     return s + string
 
 # update Vector p to made p seem random
