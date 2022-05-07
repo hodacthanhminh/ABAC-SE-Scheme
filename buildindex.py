@@ -8,7 +8,7 @@ def algorithm1(word, kF, Primes, Dummies):
     word_padding = padding(word,Dummies)
     for x in range (0,L):
         pos_x = hashF(word_padding[x],kF)
-        p[pos_x] = p[pos_x]*np.float64(1/Primes[x])
+        p[pos_x] = p[pos_x] * np.float64(1/Primes[x])
     p = updateRandomVector(p,Primes)
     return p
 
