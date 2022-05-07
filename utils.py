@@ -22,15 +22,36 @@ def hashF(kF, character):
     hash_code = int(hashlib.shake_256(encoded_string).hexdigest(1),16) % d
     return hash_code
 
+def createHashKey(Dummies):
+    key = ""
+    while (key == ""):
+        list = np.zeros((d,))
+        temp_Key = secrets.token_bytes(int(k/8))
+        for i,value in enumerate(A):
+            pos = hashF(value,temp_Key)
+            list[pos] = 1
+        for j,value in enumerate(Dummies):
+            pos = hashF(value,temp_Key)
+            list[pos] = 1
+        count=0
+        for t,value in enumerate(list):
+            if (value == 1): 
+                count+=1
+        if (count == (L + 26)):
+            key = temp_Key
+    return key
+
 # generate N ramdom Dummies character
 # Input: N
 # Output: Array N elements contain Dummy character 
-def createDummys(N): 
+def createDummies(N): 
     list = []
+    temp_list = ["*"]
     while len(list) < N:
-        randomCharacter = secrets.choice(string.ascii_uppercase + string.digits + string.punctuation);
-        if randomCharacter not in list:
+        randomCharacter = secrets.choice(string.ascii_uppercase + string.punctuation)
+        if randomCharacter not in set(temp_list):
             list.append(randomCharacter)
+            temp_list.append(randomCharacter)
     return list
 
 # generate N random Primes number
@@ -56,11 +77,12 @@ def updateRandomVector(p, Primes):
     update_pos = np.random.randint(0,d)
     prime_set = set(Primes)
     rand_yet = True
+    rand_prime = 1
     while rand_yet:
-        rand_prime = np.random.choice(smallp)
+        rand_prime = secrets.choice(smallp)
         rand_yet = rand_prime in prime_set
     while (update_num > 0) and (update_pos < d):
-        if (int(p[update_pos]) == 1):
+        if (abs((p[update_pos]) - 1) == 0):
             update_num-=1
             p[update_pos]= rand_prime
         update_pos+=1
