@@ -1,11 +1,10 @@
-from random import random
 import numpy as np
 from utils import *
 
 def Key(k): 
     M1 = genInvertedMatrix(k)
     M2 = genInvertedMatrix(k)
-    S = np.random.randint(2,size=k)
+    S = createBinaryS(k)
     return (M1,M2,S)
 
 def EncI(p,sk):
@@ -18,7 +17,7 @@ def EncI(p,sk):
             val_a = p[i]
             val_b = p[i]
         else:
-            r = 3 + np.random.rand()*4
+            r = np.round_(200*np.random.random_sample() - 100,decimals=6)
             val_a = p[i]*0.5 + r 
             val_b = p[i]*0.5 - r 
         p_a.append(val_a)
@@ -38,7 +37,7 @@ def EncQ(q,sk):
         if value == 1:
             val_a = val_b = q[i]
         else:
-            r = 3 + np.random.rand()*4
+            r = np.round_(200*np.random.random_sample()-100,decimals=6)
             val_a = q[i]*0.5 + r 
             val_b = q[i]*0.5 - r 
         q_a.append(val_a)

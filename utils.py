@@ -13,6 +13,19 @@ def genInvertedMatrix(N):
         if np.linalg.matrix_rank(Matrix) == N:
              return Matrix
 
+# generate binary array S 
+# Input: N
+# Output Binary Array S: {0,1}^N
+def createBinaryS(N):
+    while True:
+        S = np.random.randint(2,size=N)
+        count = 0
+        for i in range(0,N):
+            if S[i] == 1: 
+                count +=1
+        if (abs(int(N/2) - count) < 2):
+            return S
+
 # hashFunction
 # Input: kF - kbits in hex, character
 # Output: number in [0,255]  
