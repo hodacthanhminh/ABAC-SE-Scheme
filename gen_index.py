@@ -4,7 +4,6 @@ from collections import Counter
 def initial_key(F):
     W = []
     filedata = []
-    print(F)
     for idx, val in enumerate(F):
         cnt = Counter()
         for line in open('./doc/'+F[idx], 'r'):
@@ -18,8 +17,6 @@ def initial_key(F):
         for value in val[1].most_common(200): 
             if value not in allwords:
                 allwords.append(value)
-        print(">>allwords", allwords)
-        print(">>indx: ", idx)
         W.append(allwords)
     return W
 

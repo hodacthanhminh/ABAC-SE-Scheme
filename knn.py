@@ -17,7 +17,7 @@ def EncI(p,sk):
             val_a = p[i]
             val_b = p[i]
         else:
-            r = np.round_(200*np.random.random_sample() - 100,decimals=6)
+            r = np.round_(200*np.random.random_sample() - 100 ,decimals=6)
             val_a = p[i]*0.5 + r 
             val_b = p[i]*0.5 - r 
         p_a.append(val_a)
@@ -37,9 +37,9 @@ def EncQ(q,sk):
         if value == 1:
             val_a = val_b = q[i]
         else:
-            r = np.round_(200*np.random.random_sample()-100,decimals=6)
-            val_a = q[i]*0.5 + r 
-            val_b = q[i]*0.5 - r 
+            r = np.round_((q[i]/2)*np.random.random_sample() ,decimals=6)
+            val_a = q[i]*0.5 + r
+            val_b = q[i]*0.5 - r
         q_a.append(val_a)
         q_b.append(val_b)
     q_encrypt_a = np.matmul(q_a,invert_M1)

@@ -12,15 +12,15 @@ from search import *
 SK = genkey(k)
 
 
-(sk,kF,Dummies,Primes) = SK  
-print(Primes)
+(sk,kF,Dummies,Primes) = SK 
+print(Primes) 
 (M1,M2,S) = sk
 
-Qj =["thanhminh","t***"]
+Qj =["arteriosclerosis"]
 
 TQj= trapdoor(Qj,SK)
 
-print(search(TQj,SK,"AND"))
+print(search(TQj,SK,"OR"))
 
 
 
