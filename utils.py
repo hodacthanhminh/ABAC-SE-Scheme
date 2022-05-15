@@ -83,17 +83,12 @@ def padding(s, array):
     return s + string
 
 # update Vector p to made p seem random
-# Input: p - vector, Primes - array length L of primes number
+# Input: p - vector,
 # Ouput: new vector 
-def updateRandomVector(p, Primes):
+def updateRandomVector(p):
     update_num = np.random.randint(0,abs(d-L))
     update_pos = np.random.randint(0,d)
-    prime_set = set(Primes)
-    rand_yet = True
-    rand_prime = 1
-    while rand_yet:
-        rand_prime = secrets.choice(smallp)
-        rand_yet = rand_prime in prime_set
+    rand_prime = np.random.choice(outP)
     while (update_num > 0) and (update_pos < d):
         if (abs((p[update_pos]) - 1) == 0):
             update_num-=1

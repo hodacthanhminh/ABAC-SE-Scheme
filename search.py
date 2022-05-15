@@ -2,7 +2,7 @@ import numpy as np
 from buildindex import *
 from knn import *
 
-Wi =[["thanhminh","thplhmiwh","temp"],["math","html","thvnhmtng"],["thanhminh"]]
+Wi =[["thanhminh","thplhmiwh","temp"],["math","html","thvnhmtng"],["thanhminh","arteriosclerosis"]]
 
 def handleResult(result):
     result_abs = np.round_(abs(np.int64(result) - result),decimals=6)
@@ -43,7 +43,17 @@ def search(TQj, SK, type = "AND"):
         print("Keyword:",val)
         Ii = build_index(val, SK)
         search_matrix = knn.Search(Ii, TQj)
-        result_binary=handleResult(search_matrix)
+        sum_matrix = []
+        for r_k in search_matrix:
+            sum_row = []
+            for r_kl in r_k:
+                sum = 0
+                for num in r_kl:
+                    sum+=num
+                sum_row.append(sum)
+            sum_matrix.append(sum_row)
+        print(sum_matrix)
+        result_binary=handleResult(sum_matrix)
         if (type == "AND" and andQuery(result_binary)) or (type == "OR" and orQuery(result_binary)): 
             print("search match")
             doc_match.append(i)
