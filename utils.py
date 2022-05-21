@@ -3,6 +3,7 @@ import numpy as np
 import hashlib
 import secrets
 import string
+from charm.core.math.integer import ramdomPrime
 
 # generate square invertible Matrix N-demension
 # Input: N
@@ -71,8 +72,16 @@ def createDummies(N):
 # Input: N
 # Output: Array N elements contain Prime number
 def createPrimes(N):
-    rand_pos = np.random.randint(0,len(smallp) - L)
-    return smallp[rand_pos:rand_pos+N]
+    # rand_pos = np.random.randint(0,len(smallp) - L)
+    # return smallp[rand_pos:rand_pos+N]
+    primes = []
+    while len(primes) != N:
+        rand_bit = np.random.randint(4, 10)
+        rand_primes = ramdomPrime(rand_bit)
+        if rand_primes not in set(primes):
+            primes.append(rand_primes)
+    return primes
+
 
 # padding string len x to len L (x<=L)
 # Input: s - string, array - padding character
