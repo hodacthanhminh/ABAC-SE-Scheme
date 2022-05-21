@@ -3,7 +3,7 @@ import numpy as np
 import hashlib
 import secrets
 import string
-from charm.core.math.integer import ramdomPrime
+from charm.core.math.integer import randomPrime
 
 # generate square invertible Matrix N-demension
 # Input: N
@@ -77,7 +77,7 @@ def createPrimes(N):
     primes = []
     while len(primes) != N:
         rand_bit = np.random.randint(4, 10)
-        rand_primes = ramdomPrime(rand_bit)
+        rand_primes = int(randomPrime(rand_bit))
         if rand_primes not in set(primes):
             primes.append(rand_primes)
     return primes
