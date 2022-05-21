@@ -97,7 +97,7 @@ def padding(s, array):
 def updateRandomVector(p):
     update_num = np.random.randint(0,abs(d-L))
     update_pos = np.random.randint(0, d, update_num)
-    rand_prime = randomPrime(11)
+    rand_prime = int(randomPrime(11))
     for value in update_pos:
         if isinstance(p[value], int) and p[value] == 1:
             p[value] = rand_prime
