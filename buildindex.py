@@ -4,11 +4,11 @@ from CONSTANT import *
 from utils import *
 
 def algorithm1(word, kF, Primes, Dummies):
-    p = np.ones((d,),dtype=np.float64)
+    p = [int(1) for _ in range(0, d)]
     word_padding = padding(word,Dummies)
     for x in range (0,L):
         pos_x = hashF(word_padding[x],kF)
-        p[pos_x] = p[pos_x] * np.float64(1/Primes[x])
+        p[pos_x] = p[pos_x] * float(1/Primes[x])
     p = updateRandomVector(p)
     return p
 
