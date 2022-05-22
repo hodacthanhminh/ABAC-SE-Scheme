@@ -71,15 +71,16 @@ def createDummies(N):
 # generate N random Primes number
 # Input: N
 # Output: Array N elements contain Prime number
+
+
 def createPrimes(N):
-    # rand_pos = np.random.randint(0,len(smallp) - L)
-    # return smallp[rand_pos:rand_pos+N]
     primes = []
     while len(primes) != N:
-        rand_bit = np.random.randint(4, 10)
+        rand_bit = np.random.randint(3, 10)
         rand_primes = int(randomPrime(rand_bit))
         if rand_primes not in set(primes):
             primes.append(rand_primes)
+    # primes.sort()
     return primes
 
 
@@ -97,8 +98,21 @@ def padding(s, array):
 def updateRandomVector(p):
     update_num = np.random.randint(0,abs(d-L))
     update_pos = np.random.randint(0, d, update_num)
-    rand_prime = int(randomPrime(11))
+    rand_prime = int(randomPrime(9))
     for value in update_pos:
         if isinstance(p[value], int) and p[value] == 1:
             p[value] = rand_prime
     return p 
+
+
+def handleSearchSSum(result):
+    sum_matrix = []
+    for r_k in result:
+        sum_row = []
+        for r_kl in r_k:
+            sum = 0
+            for num in r_kl:
+                sum += num
+            sum_row.append(sum)
+        sum_matrix.append(sum_row)
+    return sum_matrix
