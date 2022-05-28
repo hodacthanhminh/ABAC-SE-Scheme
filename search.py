@@ -1,25 +1,23 @@
-from decimal import Decimal, getcontext
 import numpy as np
 from buildindex import *
 from knn import *
 
 Wi = [["thanhminh", "thplhmiwh", "temp"], ["math", "html", "thvnhmtng"], ["thanhminh", "arteriosclerosis"]]
-ctx = getcontext()
-ctx.prec = 50
 
 
 def handleResult(result):
-    result_abs = [[abs(int(x) - x) for x in y] for y in result]
+    result_abs = [[round(abs(int(x) - x), 4) for x in y] for y in result]
     print(">> result", result_abs)
     result_query = []
     for i in result_abs:
         row_temp = []
         for j in i:
-            if ((1 >= j >= 0.99545) or (0 <= j <= 0.00045)):
+            if (j == 1 or j == 0):
                 row_temp.append(1)
             else:
                 row_temp.append(0)
         result_query.append(row_temp)
+    print(result_query)
     return np.transpose(result_query)
 
 
@@ -43,37 +41,21 @@ def orQuery(matrix):
     return result
 
 
-def search(TQj, SK, type="AND"):
-    doc_match = []
-    for i, val in enumerate(Wi):
-        print("----------- Doc {}-----------".format(i))
-        print("Keyword:", val)
-        Ii = build_index(val, SK)
-        search_matrix = knn.Search(Ii, TQj)
-        result_binary = handleResult(search_matrix)
-        if (type == "AND" and andQuery(result_binary)) or (type == "OR" and orQuery(result_binary)):
-            print("search match")
-            doc_match.append(i)
-        else:
-            print("not match")
-    return doc_match
+def search(Ii, TQj, type="AND"):
+    search_matrix = knn.Search(Ii, TQj)
+    result_binary = handleResult(search_matrix)
+    if (type == "AND" and andQuery(result_binary)) or (type == "OR" and orQuery(result_binary)):
+        return "search match"
+    else:
+        return "not match"
 
 
-def searchS(TQj, SK, type="AND"):
-    doc_match = []
-    for i, val in enumerate(Wi):
-        print("----------- Doc {}-----------".format(i))
-        print("Keyword:", val)
-        Ii = build_index(val, SK)
-        print(">> keyword i shape", np.shape(Ii))
-        search_matrix = knn.Search(Ii, TQj)
-        print(">> Search shape return", np.shape(search_matrix))
-        sum_matrix = handleSearchSSum(search_matrix)
-        print(sum_matrix)
-        result_binary = handleResult(sum_matrix)
-        if (type == "AND" and andQuery(result_binary)) or (type == "OR" and orQuery(result_binary)):
-            print("search match")
-            doc_match.append(i)
-        else:
-            print("not match")
-    return doc_match
+def searchS(Ii, TQj, type="AND"):
+    search_matrix = knn.Search(Ii, TQj)
+    sum_matrix = handleSearchSSum(search_matrix)
+    print(sum_matrix)
+    result_binary = handleResult(sum_matrix)
+    if (type == "AND" and andQuery(result_binary)) or (type == "OR" and orQuery(result_binary)):
+        return "search match"
+    else:
+        return "not match"
