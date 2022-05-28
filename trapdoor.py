@@ -2,10 +2,6 @@ import numpy as np
 import knn
 from CONSTANT import *
 from utils import *
-from decimal import *
-
-ctx = getcontext()
-ctx.prec = 100
 
 
 def algorithm2(word, kF, Primes, Dummies):
@@ -19,18 +15,18 @@ def algorithm2(word, kF, Primes, Dummies):
             for y in range(0, 26):
                 pos_xy = hashF(A[y], kF)
                 q[pos_xy] = q[pos_xy]*Primes[x]
-            # for t in range(0, L):
-            #     pos_xy = hashF(Dummies[t], kF)
-            #     q[pos_xy] = q[pos_xy]*Primes[x]
-    q = updateRandomVector(q)
+            for t in range(0, L):
+                pos_xy = hashF(Dummies[t], kF)
+                q[pos_xy] = q[pos_xy]*Primes[x]
+    q = updateRandomVector(q, Primes)
     return q
 
 
-def algorithm3(s, q):
+def algorithm3(s, q, Primes):
     random_vec = np.random.randint(0, s, d)
     q_extend = [[int(0) for _ in range(0, d)] for _ in range(0, s)]
-    prime_sum = int(randomPrime(9)) - 1
-    print(prime_sum)
+    random_bit = np.random.randint(0, 2)
+    prime_sum = (getRandomPrimes(Primes)-1)*random_bit
     for j, val in enumerate(random_vec):
         q_extend[val][j] = q[j]
         numbers = [np.random.random_sample() for _ in range(s-1)]
@@ -61,17 +57,11 @@ def trapdoorS(Qj, SK):
     TQj_b = []
     for value in Qj:
         qj = algorithm2(value, kF, Primes, Dummies)
-        qj_s = algorithm3(s, qj)
+        qj_s = algorithm3(s, qj, Primes)
         qj_ea = []
         qj_eb = []
-        test_sum = 0
         for value in qj_s:
             (qj_sea, qj_seb) = knn.EncQ(value, sk)
-            (qj_da, qj_db) = knn.EncI(value, sk)
-            test_search = knn.Search((qj_da, qj_db), (qj_sea, qj_seb))
-            print(">> test search", test_search)
-            test_sum += test_search
-            print(">> test sum", Decimal(float(test_sum),ctx))
             qj_ea.append(qj_sea)
             qj_eb.append(qj_seb)
         TQj_a.append(qj_ea)
