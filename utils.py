@@ -80,7 +80,6 @@ def createPrimes(N):
         rand_primes = int(randomPrime(rand_bit))
         if rand_primes not in set(primes):
             primes.append(rand_primes)
-    # primes.sort()
     return primes
 
 
@@ -95,10 +94,12 @@ def padding(s, array):
 # update Vector p to made p seem random
 # Input: p - vector,
 # Ouput: new vector 
-def updateRandomVector(p):
+
+
+def updateRandomVector(p, Primes):
     update_num = np.random.randint(0,abs(d-L))
     update_pos = np.random.randint(0, d, update_num)
-    rand_prime = int(randomPrime(9))
+    rand_prime = getRandomPrimes(Primes)
     for value in update_pos:
         if isinstance(p[value], int) and p[value] == 1:
             p[value] = rand_prime
@@ -116,3 +117,11 @@ def handleSearchSSum(result):
             sum_row.append(sum)
         sum_matrix.append(sum_row)
     return sum_matrix
+
+
+def getRandomPrimes(Primes):
+    while True:
+        bit_present = np.random.randint(3, 9)
+        random_prime = int(randomPrime(bit_present))
+        if random_prime not in set(Primes):
+            return random_prime
