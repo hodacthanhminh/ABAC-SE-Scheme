@@ -4,61 +4,71 @@ import hashlib
 import secrets
 import string
 from charm.core.math.integer import randomPrime
+from mpmath import *
 
 # generate square invertible Matrix N-demension
 # Input: N
 # Output Invertible square N-demension Matrix
+
+
 def genInvertedMatrix(N):
     while True:
-        Matrix = np.random.rand(N,N)
+        Matrix = np.random.rand(N, N)
         if np.linalg.matrix_rank(Matrix) == N:
-             return Matrix
+            return np.array(Matrix, dtype=float)
 
-# generate binary array S 
+# generate binary array S
 # Input: N
 # Output Binary Array S: {0,1}^N
+
+
 def createBinaryS(N):
     while True:
-        S = np.random.randint(2,size=N)
+        S = np.random.randint(2, size=N)
         count = 0
-        for i in range(0,N):
-            if S[i] == 1: 
-                count +=1
+        for i in range(0, N):
+            if S[i] == 1:
+                count += 1
         if (abs(int(N/2) - count) < 2):
             return S
 
 # hashFunction
 # Input: kF - kbits in hex, character
-# Output: number in [0,255]  
+# Output: number in [0,255]
+
+
 def hashF(kF, character):
-    concat_string = "{char}{key}".format(char=character,key=kF)
+    concat_string = "{char}{key}".format(char=character, key=kF)
     encoded_string = concat_string.encode()
-    hash_code = int(hashlib.shake_256(encoded_string).hexdigest(1),16) % d
+    hash_code = int(hashlib.shake_256(encoded_string).hexdigest(1), 16) % d
     return hash_code
+
 
 def createHashKey(Dummies):
     key = ""
     while (key == ""):
         list = np.zeros((d,))
         temp_Key = secrets.token_bytes(int(k/8))
-        for i,value in enumerate(A):
-            pos = hashF(value,temp_Key)
+        for alphabet in string.ascii_lowercase:
+            pos = hashF(alphabet, temp_Key)
             list[pos] = 1
-        for j,value in enumerate(Dummies):
-            pos = hashF(value,temp_Key)
+        for dump in Dummies:
+            pos = hashF(dump, temp_Key)
             list[pos] = 1
-        count=0
-        for t,value in enumerate(list):
-            if (value == 1): 
-                count+=1
+        count = 0
+        for value in list:
+            if (value == 1):
+                count += 1
         if (count == (L + 26)):
             key = temp_Key
     return key
 
 # generate N ramdom Dummies character
 # Input: N
-# Output: Array N elements contain Dummy character 
-def createDummies(N): 
+# Output: Array N elements contain Dummy character
+
+
+def createDummies(N):
     list = []
     temp_list = ["*"]
     while len(list) < N:
@@ -66,7 +76,7 @@ def createDummies(N):
         if randomCharacter not in set(temp_list):
             list.append(randomCharacter)
             temp_list.append(randomCharacter)
-    return list
+    return np.array(list, dtype=object)
 
 # generate N random Primes number
 # Input: N
@@ -87,23 +97,24 @@ def createPrimes(N):
 # Input: s - string, array - padding character
 # Output: <s[1|,...,s[x] | array[1],...array[L-x]>
 def padding(s, array):
-    if (len(s) == L): return s
+    if (len(s) == L):
+        return s
     string = ''.join(str(v) for v in array)
-    return s + string
+    return s + string[:L -len(s)]
 
 # update Vector p to made p seem random
 # Input: p - vector,
-# Ouput: new vector 
+# Ouput: new vector
 
 
 def updateRandomVector(p, Primes):
-    update_num = np.random.randint(0,abs(d-L))
+    update_num = np.random.randint(0, abs(d-L))
     update_pos = np.random.randint(0, d, update_num)
     rand_prime = getRandomPrimes(Primes)
     for value in update_pos:
-        if isinstance(p[value], int) and p[value] == 1:
+        if p[value] == 1:
             p[value] = rand_prime
-    return p 
+    return p
 
 
 def handleSearchSSum(result):
@@ -121,7 +132,7 @@ def handleSearchSSum(result):
 
 def getRandomPrimes(Primes):
     while True:
-        bit_present = np.random.randint(3, 9)
+        bit_present = np.random.randint(3, 8)
         random_prime = int(randomPrime(bit_present))
         if random_prime not in set(Primes):
             return random_prime

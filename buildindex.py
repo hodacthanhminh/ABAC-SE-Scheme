@@ -12,7 +12,7 @@ def algorithm1(word, kF, Primes, Dummies):
     word_padding = padding(word.lower(), Dummies)
     for x in range(len(word_padding)):
         pos_x = hashF(word_padding[x], kF)
-        p[pos_x] = p[pos_x] * (mpf(1)/Primes[x])
+        p[pos_x] = p[pos_x] * (Primes[x])
     p = updateRandomVector(p, Primes)
     return p
 

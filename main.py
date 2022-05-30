@@ -15,8 +15,8 @@ class mainScheme:
         self.Index = [
             ["thanhminh", "thplhmiwh", "temp"],
             ["math", "html", "thvnhmtng"],
-            ["thanhminh", "arteriosclerosis"]]
-        self.Query = ["thanhm***", "arteriosclerosis"]
+            ["thanhminh", "arteriosclerosis", "thanvannh"]]
+        self.Query = ["thanhminh", "arteriosclerosis"]
 
     def createKey(self):
         initkey = genkey(self.d, self.L)
@@ -40,21 +40,16 @@ class mainScheme:
         self.readKey()
         print("[DONE]")
         print("---------------Build Index---------------")
-        (index, iN) = self.buildIndex(self.Index[0])
+        index = self.buildIndex(self.Index[2])
         print("[DONE]")
         print("----------Build Trapdoor basic-----------")
-        (trapdoorBas, tN) = self.trapDoor(self.Query)
+        trapdoorBas = self.trapDoor(self.Query)
         print("[DONE]")
-        print("-----------------Normal------------------")
-        print("[RESULT]: ", np.inner(iN, tN))
         print("-----------------Search------------------")
         print("[SEARCH MATCH]: ", search(index, trapdoorBas, "AND"))
 
         print("---------Build Trapdoor advanced---------")
-        (trapdoorAdv, tAN) = self.trapDoor(self.Query, "advanced")
-        print("-----------------Normal------------------")
-        print("[Result]:", handleSearchSSum(np.inner(iN, tAN)))
-        print("[DONE]")
+        trapdoorAdv = self.trapDoor(self.Query, "advanced")
         print("-----------------Search------------------")
         print("[SEARCH MATCH]: ", searchS(index, trapdoorAdv, "AND"))
 
