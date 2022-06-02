@@ -1,4 +1,6 @@
 # libs
+import pandas as pd
+import csv
 # constant
 from CONSTANT import *
 # function
@@ -9,14 +11,11 @@ from search import *
 
 
 class mainScheme:
-    def __init__(self, secParams, lengWord):
+    def __init__(self, secParams, lengWord, index):
         self.d = secParams
         self.L = lengWord
-        self.Index = [
-            ["thanhminh", "thplhmiwh", "temp"],
-            ["math", "html", "thvnhmtng"],
-            ["thanhminh", "arteriosclerosis", "thanvannh"]]
-        self.Query = ["thanhminh", "arteriosclerosis"]
+        self.Index = index
+        self.Result = []
 
     def createKey(self):
         initkey = genkey(self.d, self.L)
@@ -25,14 +24,15 @@ class mainScheme:
     def readKey(self):
         self.SK = genkey.readFile()
 
-    def buildIndex(self, W):
-        return build_index(W, self.SK)
-
-    def trapDoor(self, Q, type="basic"):
+    def trapDoor(self, type="basic"):
         if type == "basic":
-            return trapdoor0(Q, self.SK)
+            return trapdoor0(self.Query, self.SK)
         else:
-            return trapdoorS(Q, self.SK)
+            return trapdoorS(self.Query, self.SK)
+
+    def insertQuery(self):
+        val = input("Search Keyword:")
+        self.Query = val.split(" ")
 
     def run(self):
         print("-----------------Get Key-----------------")
@@ -40,20 +40,30 @@ class mainScheme:
         self.readKey()
         print("[DONE]")
         print("---------------Build Index---------------")
-        index = self.buildIndex(self.Index[2])
         print("[DONE]")
+        print("--------Enter Your Search Keyword--------")
+        self.insertQuery()
         print("----------Build Trapdoor basic-----------")
-        trapdoorBas = self.trapDoor(self.Query)
+        trapdoorBas = self.trapDoor()
+        print(np.shape(trapdoorBas))
         print("[DONE]")
         print("-----------------Search------------------")
-        print("[SEARCH MATCH]: ", search(index, trapdoorBas, "AND"))
-
-        print("---------Build Trapdoor advanced---------")
-        trapdoorAdv = self.trapDoor(self.Query, "advanced")
-        print("-----------------Search------------------")
-        print("[SEARCH MATCH]: ", searchS(index, trapdoorAdv, "AND"))
+        # for i, Ii in enumerate(self.Index):
+        #     if (search(Ii[1], trapdoorBas, "AND")):
+        #         self.Result.append(Ii[0])
+        # print("[SEARCH MATH FILE]: ", self.Result)
+        # self.Result = []
+        # print("---------Build Trapdoor advanced---------")
+        trapdoorAdv = self.trapDoor("advanced")
+        # print("-----------------Search------------------")
+        for i, Ii in enumerate(self.Index):
+            if (searchS(Ii[1], trapdoorAdv, "AND")):
+                self.Result.append(Ii[0])
+        print("[SEARCH MATH FILE]: ", self.Result)
 
 
 if __name__ == "__main__":
-    scheme = mainScheme(d, L)
+    index = pd.read_pickle("./encryptIndex_5000.csv")
+    data_search = index.to_numpy()
+    scheme = mainScheme(d, L, data_search)
     scheme.run()

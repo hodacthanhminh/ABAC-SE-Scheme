@@ -4,21 +4,21 @@ from CONSTANT import *
 from utils import *
 from mpmath import *
 
-mp.dps = 100
+mp.dps = 30
 mp.pretty = False
 
 
 def algorithm2(word, kF, Primes, Dummies):
-    q = [mpf(1) for _ in range(0, d)]
+    q = np.ones(d, dtype=float)
     word_padding = padding(word.lower(), Dummies)
     for x in range(len(word_padding)):
         if (word_padding[x] != "*"):
             pos_x = hashF(word_padding[x], kF)
-            q[pos_x] = q[pos_x] / Primes[x]
-        # else:
-        #     for y in string.ascii_lowercase:
-        #         pos_xy = hashF(y, kF)
-        #         q[pos_xy] = q[pos_xy]*Primes[x]
+            q[pos_x] = q[pos_x] * Primes[x]
+        else:
+            for y in string.ascii_lowercase:
+                pos_xy = hashF(y, kF)
+                q[pos_xy] = q[pos_xy]*Primes[x]
     q = updateRandomVector(q, Primes)
     return q
 
@@ -56,7 +56,6 @@ def trapdoorS(Qj, SK):
     (sk, dummies, primes, kf) = SK
     TQj_a = []
     TQj_b = []
-    TQj = []
     for query in Qj:
         qj = algorithm2(query, kf, primes, dummies)
         qj_s = algorithm3(s, qj, primes)

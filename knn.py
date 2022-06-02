@@ -6,7 +6,7 @@ from mpmath import *
 
 class knn:
     def __init__(self):
-        mp.dps = 100
+        mp.dps = 30
         mp.pretty = False
 
     def Key(secParams):
@@ -27,7 +27,7 @@ class knn:
                 p_a.append(val_a)
                 p_b.append(val_b)
             else:
-                r = round(np.random.randint(0, 10)/mpf(10), 1)*p[i]
+                r = round(np.random.randint(0, 10)/10, 1)*p[i]
                 val_a = p[i] - r
                 val_b = r
                 p_a.append(val_a)
@@ -49,7 +49,7 @@ class knn:
                 q_a.append(val_a)
                 q_b.append(val_b)
             else:
-                r = round(np.random.randint(0, 10)/mpf(10), 1)
+                r = round(np.random.randint(0, 10)/10, 1)*q[i]
                 val_a = q[i] - r
                 val_b = r
                 q_a.append(val_a)

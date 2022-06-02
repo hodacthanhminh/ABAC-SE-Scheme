@@ -4,8 +4,8 @@ from knn import *
 
 
 def handleResult(result):
-    result_abs = [[round(abs(int(x) - x), 2) for x in y] for y in result]
-    print("[RESULT]: ", result_abs)
+    result_abs = [[round(abs(int(x) - x), 4) for x in y] for y in result]
+    # print("[RESULT]: ", result_abs)
     result_query = []
     for i in result_abs:
         row_temp = []
@@ -15,7 +15,6 @@ def handleResult(result):
             else:
                 row_temp.append(0)
         result_query.append(row_temp)
-    print(result_query)
     return np.transpose(result_query)
 
 
@@ -41,20 +40,18 @@ def orQuery(matrix):
 
 def search(Ii, TQj, type="AND"):
     search_matrix = knn.Search(Ii, TQj)
-    print(search_matrix)
     result_binary = handleResult(search_matrix)
     if (type == "AND" and andQuery(result_binary)) or (type == "OR" and orQuery(result_binary)):
-        return "search match"
+        return True
     else:
-        return "not match"
+        return False
 
 
 def searchS(Ii, TQj, type="AND"):
     search_matrix = knn.Search(Ii, TQj)
     sum_matrix = handleSearchSSum(search_matrix)
-    print(sum_matrix)
     result_binary = handleResult(sum_matrix)
     if (type == "AND" and andQuery(result_binary)) or (type == "OR" and orQuery(result_binary)):
-        return "search match"
+        return True
     else:
-        return "not match"
+        return False
