@@ -6,8 +6,9 @@ import timeit
 from buildindex import *
 
 if __name__ == "__main__":
-    emails_df = pd.read_csv("./parsing_emails.csv",
-                            converters={"keyword": lambda x: x.strip("[]").replace("'", "").split(", ")})
+    # emails_df = pd.read_csv("./parsing_emails.csv",
+    #                         converters={"keyword": lambda x: x.strip("[]").replace("'", "").split(", ")})
+    emails_df = pd.read_json("./export_json.json")
     Data_benmark = [5, 10, 15, 20, 25, 30]
     buildindex = BuildIndex(genkey.readFile())
     bench = Benchmark()
@@ -20,7 +21,7 @@ if __name__ == "__main__":
         df['encrypt_index'] = list(map(buildindex.main, df['keyword']))
         print(">> run timer: ", timeit.default_timer() - start_timer)
         export_df = pd.concat([df['file'], df["encrypt_index"]], axis=1, keys=['file', 'encrypt_index'])
-        export_df.to_pickle("./encryptIndex_{}.csv".format(number_doc))
+        export_df.to_pickle("./encrypt_{}.json".format(number_doc))
 
     for x in Data_benmark:
         number_doc = x*1000
