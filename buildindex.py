@@ -6,6 +6,16 @@ from genkey import *
 import pandas as pd
 import csv
 from funmark import Benchmark
+import numpy as np
+import json
+from json import JSONEncoder
+
+
+class NumpyArrayEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return JSONEncoder.default(self, obj)
 
 
 class BuildIndex:
@@ -33,20 +43,28 @@ class BuildIndex:
         self.Doc += 1
         for value in Wi:
             self.KeyWord += 1
-            print("Doc {} - Key {}".format(self.Doc, self.KeyWord))
+            print("Doc {} - Key No.{} - Word {}".format(self.Doc, self.KeyWord, value))
             pi = self.algorithm1(value)
             (pi_ea, pi_eb) = knn.EncI(pi, self.sk)
             Ii_a.append(pi_ea)
             Ii_b.append(pi_eb)
-        return (Ii_a, Ii_b)
+        return json.dumps(np.array([Ii_a, Ii_b], dtype=np.ndarray), cls=NumpyArrayEncoder)
 
 
 if __name__ == "__main__":
-    emails_df = pd.read_csv("./parsing_emails.csv",
-                            converters={"keyword": lambda x: x.strip("[]").replace("'", "").split(", ")})
+    # emails_df = pd.read_csv("./parsing_emails.csv",
+    #                         converters={"keyword": lambda x: x.strip("[]").replace("'", "").split(", ")})
+    emails_df = pd.read_json("./export_json.json")
     buildindex = BuildIndex(genkey.readFile())
-    random_df = emails_df.sample(n=5000)
+    number_of_file = int(input("Enter number of file:"))
+    random_df = emails_df.sample(n=number_of_file)
+    import timeit
+    start_timer = timeit.default_timer()
     random_df['encrypt_index'] = list(map(buildindex.main, random_df['keyword']))
-
-    export_df = pd.concat([random_df['file'], random_df["encrypt_index"]], axis=1, keys=['file', 'encrypt_index'])
-    export_df.to_pickle('./encryptIndex_20.csv')
+    print("finish after {} second".format(round(timeit.default_timer() - start_timer, 2)))
+    # print("total:", timeit.default_timer() - start_timer)
+    export_df = pd.concat([random_df['file'],random_df['keyword'] ,random_df["encrypt_index"]],
+                          keys=['file', 'keyword', 'encrypt_index'], axis=1)
+    # export_df.to_pickle('./encryptIndex_500.csv')
+    export_df.to_json("./encrypt_{}.json".format(number_of_file), orient='records')
+    df = pd.read_json("./example.json")

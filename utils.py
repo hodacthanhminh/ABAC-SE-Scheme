@@ -132,7 +132,7 @@ def handleSearchSSum(result):
 
 def getRandomPrimes(Primes):
     while True:
-        bit_present = np.random.randint(3, 8)
+        bit_present = np.random.randint(3, 10)
         random_prime = int(randomPrime(bit_present))
         if random_prime not in set(Primes):
             return random_prime

@@ -8,13 +8,15 @@ from genkey import *
 from buildindex import *
 from trapdoor import *
 from search import *
+import json
 
 
 class mainScheme:
     def __init__(self, secParams, lengWord, index):
         self.d = secParams
         self.L = lengWord
-        self.Index = index
+        self.Index = index['encrypt_index']
+        self.File = index['file']
         self.Result = []
 
     def createKey(self):
@@ -43,9 +45,8 @@ class mainScheme:
         print("[DONE]")
         print("--------Enter Your Search Keyword--------")
         self.insertQuery()
-        print("----------Build Trapdoor basic-----------")
-        trapdoorBas = self.trapDoor()
-        print(np.shape(trapdoorBas))
+        # print("----------Build Trapdoor basic-----------")
+        # trapdoorBas = self.trapDoor()
         print("[DONE]")
         print("-----------------Search------------------")
         # for i, Ii in enumerate(self.Index):
@@ -53,17 +54,24 @@ class mainScheme:
         #         self.Result.append(Ii[0])
         # print("[SEARCH MATH FILE]: ", self.Result)
         # self.Result = []
-        # print("---------Build Trapdoor advanced---------")
+        print("---------Build Trapdoor advanced---------")
         trapdoorAdv = self.trapDoor("advanced")
         # print("-----------------Search------------------")
         for i, Ii in enumerate(self.Index):
-            if (searchS(Ii[1], trapdoorAdv, "AND")):
-                self.Result.append(Ii[0])
+            Im = np.asarray(json.loads(Ii))
+            # print(i,np.shape(Im))
+            try:
+                if (searchS(Im, trapdoorAdv, "AND")):
+                    self.Result.append(self.File[i])
+            except:
+                print("{} >> broken".format(i))
+                continue
+
         print("[SEARCH MATH FILE]: ", self.Result)
 
 
 if __name__ == "__main__":
-    index = pd.read_pickle("./encryptIndex_5000.csv")
-    data_search = index.to_numpy()
-    scheme = mainScheme(d, L, data_search)
+    file = input("Read Index File:")
+    index = pd.read_json(file)
+    scheme = mainScheme(d, L, index)
     scheme.run()
