@@ -1,6 +1,5 @@
 from genkey import *
 import pandas as pd
-import csv
 from funmark import Benchmark
 import timeit
 from buildindex import *
@@ -13,16 +12,15 @@ if __name__ == "__main__":
     buildindex = BuildIndex(genkey.readFile())
     bench = Benchmark()
     benchKey = Benchmark()
+    export_bench = []
+
 
     def runBen(argv):
         df = argv[0]
-        number_doc = argv[1]
-        start_timer = timeit.default_timer()
+        # number_doc = argv[1]
         df['encrypt_index'] = list(map(buildindex.main, df['keyword']))
-        print(">> run timer: ", timeit.default_timer() - start_timer)
-        export_df = pd.concat([df['file'], df["encrypt_index"]], axis=1, keys=['file', 'encrypt_index'])
-        export_df.to_pickle("./encrypt_{}.json".format(number_doc))
-
+        # export_df = pd.concat([df['file'], df["encrypt_index"]], axis=1, keys=['file', 'encrypt_index'])
+        # export_df.to_json("./encrypt_{}.json".format(number_doc))
     for x in Data_benmark:
         number_doc = x*1000
         random_df = emails_df.sample(n=number_doc)
@@ -32,7 +30,11 @@ if __name__ == "__main__":
         buildindex.Doc = 0
         bench.add(number_doc, time, memory)
         benchKey.add(number_keyword, time, memory)
+        export_bench.append({'number_doc': number_doc, 'number_keyword': number_keyword,
+                            'time': time, 'memory': memory})
 
+    with open('bench_index.json', 'w', encoding='utf-8') as f:
+        f.write(json.dumps(export_bench, ensure_ascii=False))
     plotObject = bench.plotTime(
         xlabel="n (x 1000)",
         ylabel="s",
