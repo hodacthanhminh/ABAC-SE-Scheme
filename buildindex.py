@@ -4,8 +4,6 @@ from utils import *
 from mpmath import *
 from genkey import *
 import pandas as pd
-import csv
-from funmark import Benchmark
 import numpy as np
 import json
 from json import JSONEncoder
@@ -52,8 +50,6 @@ class BuildIndex:
 
 
 if __name__ == "__main__":
-    # emails_df = pd.read_csv("./parsing_emails.csv",
-    #                         converters={"keyword": lambda x: x.strip("[]").replace("'", "").split(", ")})
     emails_df = pd.read_json("./export_json.json")
     buildindex = BuildIndex(genkey.readFile())
     number_of_file = int(input("Enter number of file:"))
@@ -62,9 +58,13 @@ if __name__ == "__main__":
     start_timer = timeit.default_timer()
     random_df['encrypt_index'] = list(map(buildindex.main, random_df['keyword']))
     print("finish after {} second".format(round(timeit.default_timer() - start_timer, 2)))
-    # print("total:", timeit.default_timer() - start_timer)
-    export_df = pd.concat([random_df['file'],random_df['keyword'] ,random_df["encrypt_index"]],
-                          keys=['file', 'keyword', 'encrypt_index'], axis=1)
-    # export_df.to_pickle('./encryptIndex_500.csv')
-    export_df.to_json("./encrypt_{}.json".format(number_of_file), orient='records')
-    df = pd.read_json("./example.json")
+    total_export_df = pd.concat([random_df["ID"], random_df["encrypt_index"]],
+                                keys=['file', 'encrypt_index'], axis=1)
+    count = 0
+    while len(total_export_df) > 0:
+        export_df = total_export_df[:2000]
+        total_export_df = total_export_df[2000:]
+        count += 1
+        data = {'ID': 'search{}'.format(count), 'Data': export_df.to_json(orient='records')}
+        with open('search-{}.json'.format(count), 'w', encoding='utf-8') as f:
+            f.write(json.dumps(data, ensure_ascii=False))
