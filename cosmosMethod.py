@@ -19,4 +19,11 @@ class cosmos():
 
     def getContainer(self):
         return self.container
+
+    def queryDocById(self, doc_id):
+        return list(self.container.query_items(query="SELECT * FROM r WHERE r.id=@id",
+                                               parameters=[
+                                                   {"name": "@id", "value": doc_id}
+                                               ],))
+
     
