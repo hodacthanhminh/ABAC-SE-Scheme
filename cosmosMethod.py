@@ -6,7 +6,7 @@ class cosmos():
         self.client = CosmosClient(ep,k)
         self.database = self.client.create_database_if_not_exists(id=db)
 
-    def changeContainer(self,cn):
+    def setContainer(self, cn):
         self.container = self.database.create_container_if_not_exists(
             id = cn, partition_key=PartitionKey(path="/id"), offer_throughput=400
         )
