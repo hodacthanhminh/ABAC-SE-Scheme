@@ -7,3 +7,5 @@ venv/
 *.csv
 
 *.json
+
+export_json.json
