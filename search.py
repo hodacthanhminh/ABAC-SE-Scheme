@@ -5,7 +5,6 @@ from knn import *
 
 def handleResult(result):
     result_abs = [[round(abs(int(x) - x), 4) for x in y] for y in result]
-    # print("[RESULT]: ", result_abs)
     result_query = []
     for i in result_abs:
         row_temp = []

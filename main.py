@@ -12,66 +12,60 @@ import json
 
 
 class mainScheme:
-    def __init__(self, secParams, lengWord, index):
+    def __init__(self, secParams, lengWord):
         self.d = secParams
         self.L = lengWord
+        self.Result = []
+        self.SK = genkey.readFile()
+
+    def set_index(self, index):
         self.Index = index['encrypt_index']
         self.File = index['file']
-        self.Result = []
 
     def createKey(self):
         initkey = genkey(self.d, self.L)
         initkey.writeFile()
 
-    def readKey(self):
-        self.SK = genkey.readFile()
-
-    def trapDoor(self, type="basic"):
-        if type == "basic":
+    def trapDoor(self):
+        if self.basic:
             return trapdoor0(self.Query, self.SK)
         else:
             return trapdoorS(self.Query, self.SK)
 
-    def insertQuery(self):
+    def insert_query(self):
+        basic = input("Build Trapdoor '{'Basic: 1 , Advance: 2}]:")
+        if int(basic) == 1:
+            self.basic = True
+        else:
+            self.basic = False
+        print(">> Build Trapdoor as basic:", self.basic)
         val = input("Search Keyword:")
         self.Query = val.split(" ")
+        self.TQj = self.trapDoor()
+        print(np.shape(self.TQj))
 
-    def run(self):
-        print("-----------------Get Key-----------------")
-        # self.createKey()
-        self.readKey()
-        print("[DONE]")
-        print("---------------Build Index---------------")
-        print("[DONE]")
-        print("--------Enter Your Search Keyword--------")
-        self.insertQuery()
-        # print("----------Build Trapdoor basic-----------")
-        # trapdoorBas = self.trapDoor()
-        print("[DONE]")
-        print("-----------------Search------------------")
-        # for i, Ii in enumerate(self.Index):
-        #     if (search(Ii[1], trapdoorBas, "AND")):
-        #         self.Result.append(Ii[0])
-        # print("[SEARCH MATH FILE]: ", self.Result)
-        # self.Result = []
-        print("---------Build Trapdoor advanced---------")
-        trapdoorAdv = self.trapDoor("advanced")
-        # print("-----------------Search------------------")
+    def set_search(self):
         for i, Ii in enumerate(self.Index):
             Im = np.asarray(json.loads(Ii))
-            # print(i,np.shape(Im))
             try:
-                if (searchS(Im, trapdoorAdv, "AND")):
-                    self.Result.append(self.File[i])
+                if self.basic:
+                    if (search(Im, self.TQj, "AND")):
+                        self.Result.append(self.File[i])
+                else:
+                    if (searchS(Im, self.TQj, "AND")):
+                        self.Result.append(self.File[i])
+
             except:
                 print("{} >> broken".format(i))
                 continue
 
-        print("[SEARCH MATH FILE]: ", self.Result)
+    def get_result(self):
+        return self.Result
 
 
 if __name__ == "__main__":
     file = input("Read Index File:")
     index = pd.read_json(file)
-    scheme = mainScheme(d, L, index)
+    scheme = mainScheme(d, L)
+    scheme.set_index(index)
     scheme.run()

@@ -1,10 +1,10 @@
 from knn import *
 from CONSTANT import *
 from utils import *
+import numpy as np
 from mpmath import *
 from genkey import *
 import pandas as pd
-import numpy as np
 import json
 from json import JSONEncoder
 
@@ -25,6 +25,8 @@ class BuildIndex:
         self.kf = kf
         self.KeyWord = 0
         self.Doc = 0
+        mp.dps = 30
+        mp.pretty = False
 
     def algorithm1(self, word):
         p = np.ones(d, dtype=float)
@@ -50,21 +52,16 @@ class BuildIndex:
 
 
 if __name__ == "__main__":
-    emails_df = pd.read_json("./export_json.json")
+    random_df = pd.read_json("./upload_email.json", orient='records')
     buildindex = BuildIndex(genkey.readFile())
-    number_of_file = int(input("Enter number of file:"))
-    random_df = emails_df.sample(n=number_of_file)
-    import timeit
-    start_timer = timeit.default_timer()
     random_df['encrypt_index'] = list(map(buildindex.main, random_df['keyword']))
-    print("finish after {} second".format(round(timeit.default_timer() - start_timer, 2)))
-    total_export_df = pd.concat([random_df["ID"], random_df["encrypt_index"]],
+    total_export_df = pd.concat([random_df["id"], random_df["encrypt_index"]],
                                 keys=['file', 'encrypt_index'], axis=1)
     count = 0
     while len(total_export_df) > 0:
-        export_df = total_export_df[:2000]
-        total_export_df = total_export_df[2000:]
+        export_df = total_export_df[:10]
+        total_export_df = total_export_df[10:]
         count += 1
-        data = {'ID': 'search{}'.format(count), 'Data': export_df.to_json(orient='records')}
-        with open('search-{}.json'.format(count), 'w', encoding='utf-8') as f:
+        data = {'id': 'search{}'.format(count), 'Data': export_df.to_json(orient='records')}
+        with open('./search/search-{}.json'.format(count), 'w', encoding='utf-8') as f:
             f.write(json.dumps(data, ensure_ascii=False))
