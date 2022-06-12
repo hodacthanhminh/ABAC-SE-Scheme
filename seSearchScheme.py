@@ -3,12 +3,12 @@ import pandas as pd
 import os
 import json
 # se scheme
-from main import mainScheme
-from CONSTANT import *
+from se.searchscheme import PSE
+from se.contants import d, L
 
 
 if __name__ == "__main__":
-    scheme = mainScheme(d, L)
+    scheme = PSE(d, L)
     scheme.insert_query()
     index_path = "./local/search/"
     for x in os.listdir(index_path):
