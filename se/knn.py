@@ -3,7 +3,7 @@ import numpy as np
 from mpmath import *
 # class/func
 from .utils import gen_inverted_matrix, create_binary_S
-from .contants import k
+from .contants import d
 
 
 class KNN:
@@ -14,7 +14,7 @@ class KNN:
     def Key(secParams):
         M1 = gen_inverted_matrix(secParams)
         M2 = gen_inverted_matrix(secParams)
-        S = create_binary_S(k)
+        S = create_binary_S(d)
         return (M1, M2, S)
 
     def EncI(p, sk):

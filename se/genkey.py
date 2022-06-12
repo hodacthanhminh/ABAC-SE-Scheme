@@ -1,9 +1,9 @@
 # libs
-import pickle
-from pyspark import cloudpickle
+import json
+import pandas as pd
 # class/funcs
 from .knn import KNN
-from .utils import create_dummies, create_primes, create_hash_key
+from .utils import create_dummies, create_primes, create_hash_key, NumpyArrayEncoder
 
 
 class GenKey:
@@ -15,21 +15,22 @@ class GenKey:
         self.primes = create_primes(self.lengWord)
         self.kf = create_hash_key(self.dummies)
 
-    def write_file(self):
-        key_id = input('Enter key id')
-        with open('./local/key/key-{}.json'.format(key_id), 'wb') as filehandle:
-            data = [{'id': 'key-{}'.format(key_id), 'sk': self.sk, 'dummies': self.dummies,
-                     'primes': self.primes, 'kf': self.kf}]
-            filehandle.close()
+    def write_key(self):
+        key_id = input('Create new key id:')
+        with open('./local/key/key-{}.json'.format(key_id), 'w') as filehandle:
+            sk_str = json.dumps({'sk': self.sk, 'dummies': self.dummies, 'primes': self.primes,
+                                'kf': str(self.kf, 'latin1')}, cls=NumpyArrayEncoder)
+            data = json.dumps([{'id': 'key-{}'.format(key_id), 'data': sk_str}])
+            filehandle.write(data)
 
 
-def read_file():
-    with open('genKey.txt', 'rb') as filehandle:
-        data = pickle.load(filehandle)
-        filehandle.close()
 
-    sk = data['sk']
+def read_key() -> tuple:
+    key_id = input('Insert your key id:')
+    key = pd.read_json('./local/key/key-{}.json'.format(key_id), orient='records')
+    data = json.loads(key['data'][0])
+    sk = tuple(data['sk'])
     primes = data['primes']
     dummies = data['dummies']
-    kf = data['kf']
+    kf = bytes(data['kf'], 'latin1')
     return (sk, dummies, primes, kf)

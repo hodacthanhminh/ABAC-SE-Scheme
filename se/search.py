@@ -1,6 +1,5 @@
 # libs
 import numpy as np
-from traitlets import Bool
 # class/funcs
 from .knn import KNN
 
@@ -53,7 +52,7 @@ def or_query(matrix):
 
 
 class Search:
-    def __init__(self, andQ: Bool, basic: Bool):
+    def __init__(self, andQ: bool, basic: bool):
         self.andQ = andQ
         self.basic = basic
 

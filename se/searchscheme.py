@@ -1,20 +1,18 @@
 # libs
 import numpy as np
 import json
-
-from traitlets import Bool
 # class/funcs
-from .genkey import read_file, GenKey
+from .genkey import read_key, GenKey
 from .search import Search
 from .trapdoor import TrapDoor
 
 
 class PSE:
-    def __init__(self, secParams, lengWord):
+    def __init__(self, secParams: int, lengWord: int):
         self.d = secParams
         self.L = lengWord
         self.Result = []
-        self.SK = read_file()
+        self.SK = read_key()
 
     def set_index(self, index):
         self.Index = index['encrypt_index']
@@ -22,14 +20,14 @@ class PSE:
 
     def createKey(self):
         initkey = GenKey(self.d, self.L)
-        initkey.write_file()
+        initkey.write_key()
 
     def get_trapdoor(self):
         trapdoor = TrapDoor(self.SK, self.basic)
         return trapdoor.create_trapdoor(self.Query)
 
     def set_scheme(self):
-        basic: Bool = input("Build Trapdoor '{'Basic: 1 , Advance: 2}]:")
+        basic = input("Build Trapdoor '{'Basic: 1 , Advance: 2}]:")
         if int(basic) == 1:
             self.basic = True
         else:
