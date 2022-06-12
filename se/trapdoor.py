@@ -2,8 +2,6 @@
 import numpy as np
 from mpmath import *
 import string
-
-from traitlets import Bool
 # class/func
 from .knn import KNN
 from .contants import s, d, L
