@@ -12,7 +12,7 @@ mp.pretty = False
 
 
 class TrapDoor:
-    def __init__(self, SK: tuple, basic: Bool):
+    def __init__(self, SK: tuple, basic: bool):
         (sk, dummies, primes, kf) = SK
         self.sk = sk
         self.dummies = dummies
