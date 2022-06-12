@@ -123,7 +123,7 @@ def update_random_vector(p, Primes):
 def get_random_primes(Primes):
     while True:
         bit_present = np.random.randint(3, 10)
-        random_prime = int(random_prime(bit_present))
+        random_prime = int(randomPrime(bit_present))
         if random_prime not in set(Primes):
             return random_prime
 

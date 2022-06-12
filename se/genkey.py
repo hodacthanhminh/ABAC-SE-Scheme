@@ -24,7 +24,6 @@ class GenKey:
             filehandle.write(data)
 
 
-
 def read_key() -> tuple:
     key_id = input('Insert your key id:')
     key = pd.read_json('./local/key/key-{}.json'.format(key_id), orient='records')

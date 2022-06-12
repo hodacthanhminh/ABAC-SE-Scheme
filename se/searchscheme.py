@@ -16,7 +16,7 @@ class PSE:
 
     def set_index(self, index):
         self.Index = index['encrypt_index']
-        self.File = index['file']
+        self.File = index['id']
 
     def createKey(self):
         initkey = GenKey(self.d, self.L)
