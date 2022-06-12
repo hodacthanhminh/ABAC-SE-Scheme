@@ -5,3 +5,5 @@ genKey.txt
 venv/
 
 *.csv
+
+*.json
