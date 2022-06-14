@@ -8,11 +8,11 @@ from .trapdoor import TrapDoor
 
 
 class PSE:
-    def __init__(self, secParams: int, lengWord: int):
+    def __init__(self, secParams: int, lengWord: int, key_id: str):
         self.d = secParams
         self.L = lengWord
         self.Result = []
-        self.SK = read_key()
+        self.SK = read_key(key_id)
 
     def set_index(self, index):
         self.Index = index['encrypt_index']
@@ -20,7 +20,8 @@ class PSE:
 
     def createKey(self):
         initkey = GenKey(self.d, self.L)
-        initkey.write_key()
+        key_id = input('Create new key id:')
+        initkey.write_key(key_id)
 
     def get_trapdoor(self):
         trapdoor = TrapDoor(self.SK, self.basic)

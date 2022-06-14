@@ -15,8 +15,8 @@ class GenKey:
         self.primes = create_primes(self.lengWord)
         self.kf = create_hash_key(self.dummies)
 
-    def write_key(self):
-        key_id = input('Create new key id:')
+    def write_key(self, key_id):
+
         with open('./local/key/key-{}.json'.format(key_id), 'w') as filehandle:
             sk_str = json.dumps({'sk': self.sk, 'dummies': self.dummies, 'primes': self.primes,
                                 'kf': str(self.kf, 'latin1')}, cls=NumpyArrayEncoder)
@@ -24,8 +24,7 @@ class GenKey:
             filehandle.write(data)
 
 
-def read_key() -> tuple:
-    key_id = input('Insert your key id:')
+def read_key(key_id) -> tuple:
     key = pd.read_json('./local/key/key-{}.json'.format(key_id), orient='records')
     data = json.loads(key['data'][0])
     sk = tuple(data['sk'])
