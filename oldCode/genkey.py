@@ -2,7 +2,7 @@ from copyreg import pickle
 from knn import *
 from CONSTANT import *
 from utils import *
-from pyspark import cloudpickle
+# from pyspark import cloudpickle
 import pickle
 
 
