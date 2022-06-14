@@ -8,5 +8,6 @@
         "--max-line-length",
         "120",
         "--experimental"
-    ]
+    ],
+    "git.ignoreLimitWarning": true
 }

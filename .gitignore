@@ -1,7 +1,19 @@
 __pycache__/
+emailDocuments/
+venv/
+
 
 genKey.txt
 
-venv/
 
 *.csv
+
+*.json
+pbc-0.5.14/
+export_json.json
+*.tar.*
+
+.vscode/
+
+charm/
+
