@@ -26,7 +26,8 @@ if __name__ == "__main__":
     cosmos_instance.set_container(SEARCH_CONTAINER)
     container = cosmos_instance.get_container()
     list_read = list(container.read_all_items(max_item_count=5))
-    se = PSE(d, L)
+    key_id = input("Insert key_id")
+    se = PSE(d, L, key_id)
     se.insert_query(basic=False)
     for x in list_read:
         index = pd.read_json(x['Data'])

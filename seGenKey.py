@@ -5,5 +5,5 @@ from se.contants import d, L
 
 if __name__ == "__main__":
     key = GenKey(d, L)
-    key.write_key()
-    (sk, dummies, primes, kf) = read_key()
+    key_id = input('Create new key id:')
+    key.write_key(key_id)

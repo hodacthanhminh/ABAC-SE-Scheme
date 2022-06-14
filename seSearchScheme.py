@@ -8,7 +8,8 @@ from se.contants import d, L
 
 
 if __name__ == "__main__":
-    scheme = PSE(d, L)
+    key_id = input("Insert keyid")
+    scheme = PSE(d, L, key_id)
     scheme.insert_query()
     index_path = "./local/search/"
     for x in os.listdir(index_path):
