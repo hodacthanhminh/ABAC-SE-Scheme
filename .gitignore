@@ -2,6 +2,9 @@ __pycache__/
 emailDocuments/
 venv/
 
+*.env
+*.env.*
+
 
 genKey.txt
 
