@@ -2,11 +2,17 @@
 import os
 import sys
 from fastapi import FastAPI, HTTPException
+from typing import Union
 import json
 from dotenv import load_dotenv
 from os.path import join, dirname
+from pydantic import BaseModel
+import numpy as np
+import pandas as pd
 # class/funcs
 from se.genkey import read_key
+from se.contants import d, L
+from se.searchscheme import PSE
 from cosmosMethod import CosmosClass
 
 app = FastAPI()
@@ -21,14 +27,22 @@ ENDPOINT = os.environ.get("ENDPOINT")
 KEY = os.environ.get("KEY")
 DATABASE_NAME = os.environ.get("DATABASE_NAME")
 DOCUMENT_CONTAINER = os.environ.get("DOCUMENT_CONTAINER")
+INDEX_CONTAINER = os.environ.get("INDEX_CONTAINER")
 
 
-@app.get("/")
+class SearchItem(BaseModel):
+    key: str
+    trapdoor: str
+    basic: Union[bool, None] = True
+    andQ: Union[bool, None] = True
+
+
+@ app.get("/")
 def root():
     return {"Helllo": "Hello World!"}
 
 
-@app.get("/key")
+@ app.get("/key")
 async def get_key(id):
     try:
         (sk, dummies, primes, kf) = read_key(id)
@@ -37,7 +51,7 @@ async def get_key(id):
         raise HTTPException(status_code=404, detail="NOT FOUND")
 
 
-@app.get("/document")
+@ app.get("/document")
 async def get_document(id):
     try:
         cosmos = CosmosClass(ENDPOINT, KEY, DATABASE_NAME)
@@ -46,6 +60,29 @@ async def get_document(id):
     except:
         raise HTTPException(status_code=500, detail="INTERNAL SERVER ERROR")
     if len(document) > 0:
-        return document
+        return document[0]
     else:
         raise HTTPException(status_code=404, detail="NOT FOUND")
+
+
+@ app.post("/search")
+async def search_calculation(search_item: SearchItem):
+    try:
+        se = PSE(d, L)
+        se.set_detail(search_item.basic, search_item.andQ)
+        trapdoor_decode = np.asarray(json.loads(search_item.trapdoor))
+        se.set_trapdoor(trapdoor_decode)
+        cosmos_instance = CosmosClass(ENDPOINT, KEY, DATABASE_NAME)
+        cosmos_instance.set_container(INDEX_CONTAINER)
+        container = cosmos_instance.get_container()
+        list_read = list(container.read_all_items(max_item_count=10))
+        for x in list_read:
+            index = pd.read_json(x['data'])
+            se.set_index(index)
+            se.set_search()
+        result = se.get_result()
+        if len(result) == 0:
+            return HTTPException(status_code=404, detail="NOT FOUND")
+        return {'document_match': result}
+    except:
+        raise HTTPException(status_code=500, detail="INTERNAL SERVER ERROR")
