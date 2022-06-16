@@ -20,3 +20,5 @@ export_json.json
 
 charm/
 
+*.txt
+
