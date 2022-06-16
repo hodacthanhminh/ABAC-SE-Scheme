@@ -1,4 +1,5 @@
 # sys libs
+import uuid
 import os
 import sys
 from os.path import join, dirname
@@ -9,8 +10,12 @@ import numpy as np
 import pandas as pd
 # api libs
 from typing import Union
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, UUID4, BaseSettings
+from fastapi import FastAPI, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi_login import LoginManager
+from fastapi_login.exceptions import InvalidCredentialsException
 # class/funcs
 from se.genkey import read_key
 from se.contants import d, L
@@ -30,27 +35,72 @@ DATABASE_NAME = os.environ.get("DATABASE_NAME")
 DOCUMENT_CONTAINER = os.environ.get("DOCUMENT_CONTAINER")
 INDEX_CONTAINER = os.environ.get("INDEX_CONTAINER")
 
+
+class Settings(BaseSettings):
+    secret: str
+
+
+DEFAULT_SETTINGS = Settings(_env_file=".env")
+DB = {
+    "users": {}
+}
+TOKEN_URL = "/login"
+
 app = FastAPI()
+manager = LoginManager(DEFAULT_SETTINGS.secret, TOKEN_URL)
 
-class SearchItem(BaseModel):
-    key: str
-    trapdoor: str
-    basic: Union[bool, None] = True
-    andQ: Union[bool, None] = True
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
-class UserAuthentication(BaseModel):
+@manager.user_loader()
+def get_user(email: str):
+    return DB["users"].get(email)
+
+
+def initadd(db_user):
+    DB["users"][db_user['email']] = db_user
+
+
+initadd({'email': 'alice', 'password': 'alice', 'id': uuid.uuid4()})
+initadd({'email': 'lily', 'password': 'lily', 'id': uuid.uuid4()})
+initadd({'email': 'luke', 'password': 'luke', 'id': uuid.uuid4()})
+initadd({'email': 'bob', 'password': 'bob', 'id': uuid.uuid4()})
+initadd({'email': 'john', 'password': 'john', 'id': uuid.uuid4()})
+initadd({'email': 'mike', 'password': 'mike', 'id': uuid.uuid4()})
+
+
+class Data(BaseModel):
+    user: dict
+
+
+class UserCreate(BaseModel):
     username: str
     password: str
-    attribute: list
 
-# @ app.post("/authentication")
 
-# def authentication_user(user: UserAuthentication):
+class User(UserCreate):
+    id: UUID4
 
-#     verify = request.post()
 
-#     return
+@app.post(TOKEN_URL)
+def login(data: OAuth2PasswordRequestForm = Depends()):
+    email = data.username
+    password = data.password
+    user = get_user(email)
+    if not user:
+        raise InvalidCredentialsException  # you can also use your own HTTPException
+    elif password != user['password']:
+        raise InvalidCredentialsException
+    access_token = manager.create_access_token(
+        data=dict(sub=email)
+    )
+    return {'access_token': access_token, 'token_type': 'bearer'}
 
 
 @ app.get("/")
@@ -59,7 +109,7 @@ def root():
 
 
 @ app.get("/key")
-async def get_key(id):
+async def get_key(id, user=Depends(manager)):
     try:
         (sk, dummies, primes, kf) = read_key(id)
         return {'key-id': "key-{}".format(id), 'key': {'sk': {'S': json.dumps(sk[2]), 'M1': json.dumps(sk[0]), 'M2': json.dumps(sk[1])}, 'dummies': json.dumps(dummies), 'primes': json.dumps(primes), 'kf': str(kf, encoding='latin1')}}
@@ -68,7 +118,7 @@ async def get_key(id):
 
 
 @ app.get("/document")
-async def get_document(id):
+async def get_document(id, user=Depends(manager)):
     try:
         cosmos = CosmosClass(ENDPOINT, KEY, DATABASE_NAME)
         cosmos.set_container(DOCUMENT_CONTAINER)
@@ -81,8 +131,15 @@ async def get_document(id):
         raise HTTPException(status_code=404, detail="NOT FOUND")
 
 
+class SearchItem(BaseModel):
+    key: str
+    trapdoor: str
+    basic: Union[bool, None] = True
+    andQ: Union[bool, None] = True
+
+
 @ app.post("/search")
-async def search_calculation(search_item: SearchItem):
+async def search_calculation(search_item: SearchItem, user=Depends(manager)):
     try:
         se = PSE(d, L)
         se.set_detail(search_item.basic, search_item.andQ)
