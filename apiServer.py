@@ -1,21 +1,22 @@
-# libs
+# sys libs
 import os
 import sys
-from fastapi import FastAPI, HTTPException
-from typing import Union
-import json
-from dotenv import load_dotenv
 from os.path import join, dirname
-from pydantic import BaseModel
+# funcs libs
+from dotenv import load_dotenv
+import json
 import numpy as np
 import pandas as pd
+# api libs
+from typing import Union
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 # class/funcs
 from se.genkey import read_key
 from se.contants import d, L
 from se.searchscheme import PSE
 from cosmosMethod import CosmosClass
 
-app = FastAPI()
 
 parent_dir_name = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(parent_dir_name)
@@ -29,12 +30,27 @@ DATABASE_NAME = os.environ.get("DATABASE_NAME")
 DOCUMENT_CONTAINER = os.environ.get("DOCUMENT_CONTAINER")
 INDEX_CONTAINER = os.environ.get("INDEX_CONTAINER")
 
+app = FastAPI()
 
 class SearchItem(BaseModel):
     key: str
     trapdoor: str
     basic: Union[bool, None] = True
     andQ: Union[bool, None] = True
+
+
+class UserAuthentication(BaseModel):
+    username: str
+    password: str
+    attribute: list
+
+# @ app.post("/authentication")
+
+# def authentication_user(user: UserAuthentication):
+
+#     verify = request.post()
+
+#     return
 
 
 @ app.get("/")
