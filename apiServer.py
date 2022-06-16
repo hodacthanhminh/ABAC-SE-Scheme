@@ -9,6 +9,7 @@ from os.path import join, dirname
 from pydantic import BaseModel
 import numpy as np
 import pandas as pd
+from requests import request
 # class/funcs
 from se.genkey import read_key
 from se.contants import d, L
@@ -35,6 +36,20 @@ class SearchItem(BaseModel):
     trapdoor: str
     basic: Union[bool, None] = True
     andQ: Union[bool, None] = True
+
+
+class UserAuthentication(BaseModel):
+    username: str
+    password: str
+    attribute: list
+
+
+@ app.post("/authentication")
+def authentication_user(user: UserAuthentication):
+
+    verify = request.post()
+
+    return
 
 
 @ app.get("/")
@@ -81,6 +96,7 @@ async def search_calculation(search_item: SearchItem):
             se.set_index(index)
             se.set_search()
         result = se.get_result()
+        print(result)
         if len(result) == 0:
             return HTTPException(status_code=404, detail="NOT FOUND")
         return {'document_match': result}
