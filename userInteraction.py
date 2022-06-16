@@ -7,6 +7,8 @@ import os
 from os.path import join, dirname
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
+from requests import request
 # class/funcs
 from se.searchscheme import PSE
 from se.contants import d, L
@@ -21,8 +23,29 @@ sys.path.append(parent_dir_name)
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 GPP_IP = os.environ.get("GPP_IP")
+BACKEND_IP = os.environ.get("BACKEND_IP")
 
 app = FastAPI()
+app.mount("/storage", StaticFiles(directory="storage"), name="storage")
+
+
+DB_token = {
+    "user_token": "",
+    "user_attribute": ""
+}
+
+Headers = {
+    'Authorization': ""
+}
+
+
+def setToken(token: str):
+    DB_token["user_token"] = token
+    setHeader()
+
+
+def setHeader():
+    Headers["Authorization"] = DB_token["user_token"]
 
 
 class SearchBody(BaseModel):
@@ -30,6 +53,23 @@ class SearchBody(BaseModel):
     key: str
     basicScheme: Union[bool, None] = True
     andQuery: Union[bool, None] = True
+
+
+class User(BaseModel):
+    username: str
+    password: str
+
+
+@app.post("/login")
+def get_authen(body: User):
+    response = requests.post(
+        url="{}/login".format(BACKEND_IP),
+        data={"username": body.username, "password": body.password})
+    token = json.loads(response.text)
+    update_token = '{} {}'.format(token["token_type"], token["access_token"])
+    print(update_token)
+    setToken(update_token)
+    return {"detail": "Login Success", "data": token}
 
 
 @app.post("/search")
@@ -46,17 +86,19 @@ def generate_trapdoor(body: SearchBody):
     trapdoor = se.get_trapdoor()
     data = {'trapdoor': json.dumps(trapdoor, cls=NumpyArrayEncoder),
             'key': body.key, 'basic': basic, 'andQ': andQ}
-    response = requests.post("http://127.0.0.1:3000/search", json=data)
+    print(data["key"])
+    response = requests.post(url="{}/search".format(BACKEND_IP), json=data, headers=Headers)
     return json.loads(response.text)
 
 
 @app.get("/get_document")
 def get_document(doc_id):
-    response = requests.get("http://127.0.0.1:3000/document", params={'id': doc_id})
+    response = requests.get(url="{}/document".format(BACKEND_IP), params={'id': doc_id}, headers=Headers)
     file = json.loads(response.text)
     file = remove_unuse_key(file)
-    storage_path = os.path.join(os.getcwd(), 'storage/searchResult/encrypted/{}.json'.format(doc_id))
-    with open(storage_path, 'w') as f:
+    storage_path = 'storage/searchResult/encrypted/{}.json'.format(doc_id)
+    os_path = os.path.join(os.getcwd(), storage_path)
+    with open(os_path, 'w') as f:
         json.dump(file, f)
     f.close()
     return {'storage at': storage_path, 'cipher_text': file}
@@ -71,12 +113,16 @@ class DecryptRequest(BaseModel):
 def decrypt_document(body: DecryptRequest):
     user_attribute = loadObject(body.user_path)
     ddc = DecryptDocument(groupObj)
-    with open(body.document_path, "r") as f:
+    os_path = os.path.join(os.getcwd(), body.document_path)
+    with open(os_path, "r") as f:
         document = json.load(f)
+        document_id = document['id']
+        f.close()
     ddc.set_GPP(GPP_IP)
     plaint_text = ddc.get_result(document, user_attribute)
-    storage_path = os.path.join(os.getcwd(), 'storage/searchResult/decrypted/{}.json'.format(plaint_text['id']))
-    with open(storage_path, "w") as f:
+    storage_path = 'storage/searchResult/decrypted/{}.json'.format(document_id)
+    os_path = os.path.join(os.getcwd(), storage_path)
+    with open(os_path, "w") as f:
         f.write(plaint_text)
     return {'storage at': storage_path, 'plaint_text': plaint_text}
 
