@@ -1,4 +1,5 @@
 # sys libs
+from urllib import response
 import uuid
 import os
 import sys
@@ -11,6 +12,7 @@ import pandas as pd
 # api libs
 from typing import Union
 from pydantic import BaseModel, UUID4, BaseSettings
+import requests
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
@@ -34,6 +36,9 @@ KEY = os.environ.get("KEY")
 DATABASE_NAME = os.environ.get("DATABASE_NAME")
 DOCUMENT_CONTAINER = os.environ.get("DOCUMENT_CONTAINER")
 INDEX_CONTAINER = os.environ.get("INDEX_CONTAINER")
+AA1_IP = os.environ.get("AA1_IP")
+AA2_IP = os.environ.get("AA2_IP")
+AA3_IP = os.environ.get("AA3_IP")
 
 
 class Settings(BaseSettings):
@@ -73,6 +78,26 @@ initadd({'email': 'luke', 'password': 'luke', 'id': uuid.uuid4()})
 initadd({'email': 'bob', 'password': 'bob', 'id': uuid.uuid4()})
 initadd({'email': 'john', 'password': 'john', 'id': uuid.uuid4()})
 initadd({'email': 'mike', 'password': 'mike', 'id': uuid.uuid4()})
+initadd({'email': 'khanh', 'password': 'khanh', 'id': uuid.uuid4()})
+initadd({'email': 'trung', 'password': 'trung', 'id': uuid.uuid4()})
+
+
+def verifyattr(uname: str, attribute: dict):
+    data = json.loads(attribute)
+    result = [None, None, None]
+    for i in data:
+        if i == 'PROVIDER':
+            response_AA1 = requests.post(AA1_IP, json={'uname': uname, 'attribute': data[i]})
+            result[0] = response_AA1.text
+        if i == 'PUBLICADMIN':
+            response_AA2 = requests.post(AA2_IP, json={'uname': uname, 'attribute': data[i]})
+            result[1] = response_AA2.text
+        if i == 'TRANSACTIONSUPPORT':
+            response_AA3 = requests.post(AA3_IP, json={'uname': uname, 'attribute': data[i]})
+            print(response_AA3)
+            result[2] = response_AA3.text
+    print(result)
+    return True
 
 
 class Data(BaseModel):
@@ -89,13 +114,16 @@ class User(UserCreate):
 
 
 @app.post(TOKEN_URL)
-def login(data: OAuth2PasswordRequestForm = Depends()):
+def login(attribute: str, data: OAuth2PasswordRequestForm = Depends()):
     email = data.username
     password = data.password
     user = get_user(email)
+    verify = verifyattr(email,attribute)
     if not user:
         raise InvalidCredentialsException  # you can also use your own HTTPException
     elif password != user['password']:
+        raise InvalidCredentialsException
+    elif not verify:
         raise InvalidCredentialsException
     access_token = manager.create_access_token(
         data=dict(sub=email)
@@ -140,7 +168,9 @@ class SearchItem(BaseModel):
 
 @ app.post("/search")
 async def search_calculation(search_item: SearchItem, user=Depends(manager)):
+    print("[LOG]: Execute Search")
     try:
+        print(search_item.key)
         se = PSE(d, L)
         se.set_detail(search_item.basic, search_item.andQ)
         trapdoor_decode = np.asarray(json.loads(search_item.trapdoor))
