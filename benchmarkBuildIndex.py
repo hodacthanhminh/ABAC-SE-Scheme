@@ -1,15 +1,15 @@
-from genkey import *
+from se.genkey import GenKey, read_key
 import pandas as pd
 from funmark import Benchmark
-import timeit
-from buildindex import *
+from se.buildindex import *
 
 if __name__ == "__main__":
     # emails_df = pd.read_csv("./parsing_emails.csv",
     #                         converters={"keyword": lambda x: x.strip("[]").replace("'", "").split(", ")})
     emails_df = pd.read_json("./export_json.json")
     Data_benmark = [5, 10, 15, 20, 25, 30]
-    buildindex = BuildIndex(genkey.readFile())
+    SK = read_key("storage/256/key/key256-01.json")
+    buildindex = BuildIndex(SK)
     bench = Benchmark()
     benchKey = Benchmark()
     export_bench = []
@@ -22,7 +22,7 @@ if __name__ == "__main__":
         # export_df = pd.concat([df['file'], df["encrypt_index"]], axis=1, keys=['file', 'encrypt_index'])
         # export_df.to_json("./encrypt_{}.json".format(number_doc))
     for x in Data_benmark:
-        number_doc = x*1000
+        number_doc = x*100
         random_df = emails_df.sample(n=number_doc)
         time, memory = bench.run(runBen, random_df, number_doc)
         number_keyword = buildindex.KeyWord
