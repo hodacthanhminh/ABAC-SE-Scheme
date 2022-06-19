@@ -22,7 +22,7 @@ if __name__ == "__main__":
         # export_df = pd.concat([df['file'], df["encrypt_index"]], axis=1, keys=['file', 'encrypt_index'])
         # export_df.to_json("./encrypt_{}.json".format(number_doc))
     for x in Data_benmark:
-        number_doc = x*1000
+        number_doc = x*100
         random_df = emails_df.sample(n=number_doc)
         time, memory = bench.run(runBen, random_df, number_doc)
         number_keyword = buildindex.KeyWord
