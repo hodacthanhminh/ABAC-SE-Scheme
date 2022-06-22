@@ -35,7 +35,7 @@ class BuildIndex:
         self.Doc += 1
         for value in Wi:
             self.KeyWord += 1
-            print("Doc {} - Key No.{} - Word {}".format(self.Doc, self.KeyWord, value))
+            # print("Doc {} - Key No.{} - Word {}".format(self.Doc, self.KeyWord, value))
             pi = self.algorithm1(value)
             (pi_ea, pi_eb) = KNN.EncI(pi, self.sk)
             Ii_a.append(pi_ea)
