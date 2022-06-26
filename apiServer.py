@@ -82,24 +82,25 @@ initadd({'email': 'trung', 'password': 'trung', 'id': uuid.uuid4()})
 
 
 def verifyattr(uname: str, attribute: str):
+    print("[LOG]: Verify Attribute User")
     data = json.loads(attribute)
     result = [None, None, None]
     for i in data:
         if i == 'PROVIDER':
             response_AA1 = requests.post(AA1_IP, json={'uname': uname, 'attribute': data[i]})
             result[0] = response_AA1.text
-            if (not response_AA1.text):
+            if (not json.loads(result[0])):
                 return False
         if i == 'PUBLICADMIN':
             response_AA2 = requests.post(AA2_IP, json={'uname': uname, 'attribute': data[i]})
             result[1] = response_AA2.text
-            if (not response_AA2.text):
+            if (not json.loads(result[1])):
                 return False
         if i == 'TRANSACTIONSUPPORT':
             response_AA3 = requests.post(AA3_IP, json={'uname': uname, 'attribute': data[i]})
-            if (not response_AA3.text):
-                return False
             result[2] = response_AA3.text
+            if (not json.loads(result[2])):
+                return False
     if (not result[0]) and (not result[1]) and (not result[2]):
         return False
     return True
@@ -120,16 +121,17 @@ class User(UserCreate):
 
 @app.post(TOKEN_URL)
 def login(attribute=Form(), data: OAuth2PasswordRequestForm = Depends()):
+    print("[LOG]: Authenticate User")
     email = data.username
     password = data.password
     user = get_user(email)
-    # verify = verifyattr(email, attribute)
+    verify = verifyattr(email, attribute)
     if not user:
         raise InvalidCredentialsException  # you can also use your own HTTPException
     elif password != user['password']:
         raise InvalidCredentialsException
-    # elif not verify:
-    #     raise InvalidCredentialsException
+    elif not verify:
+        raise InvalidCredentialsException
     access_token = manager.create_access_token(
         data=dict(sub=email)
     )
@@ -152,6 +154,7 @@ async def get_key(id, user=Depends(manager)):
 
 @ app.get("/document")
 async def get_document(id, user=Depends(manager)):
+    print("[LOG]: Get Document")
     try:
         cosmos = CosmosClass(ENDPOINT, KEY, DATABASE_NAME)
         cosmos.set_container(DOCUMENT_CONTAINER)
@@ -175,7 +178,6 @@ class SearchItem(BaseModel):
 async def search_calculation(search_item: SearchItem, user=Depends(manager)):
     print("[LOG]: Execute Search")
     try:
-        print(search_item.key)
         se = PSE(d, L)
         se.set_detail(search_item.basic, search_item.andQ)
         trapdoor_decode = np.asarray(json.loads(search_item.trapdoor))
