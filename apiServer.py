@@ -88,14 +88,20 @@ def verifyattr(uname: str, attribute: str):
         if i == 'PROVIDER':
             response_AA1 = requests.post(AA1_IP, json={'uname': uname, 'attribute': data[i]})
             result[0] = response_AA1.text
+            if (not response_AA1.text):
+                return False
         if i == 'PUBLICADMIN':
             response_AA2 = requests.post(AA2_IP, json={'uname': uname, 'attribute': data[i]})
             result[1] = response_AA2.text
+            if (not response_AA2.text):
+                return False
         if i == 'TRANSACTIONSUPPORT':
             response_AA3 = requests.post(AA3_IP, json={'uname': uname, 'attribute': data[i]})
-            print(response_AA3)
+            if (not response_AA3.text):
+                return False
             result[2] = response_AA3.text
-    print(result)
+    if (not result[0]) and (not result[1]) and (not result[2]):
+        return False
     return True
 
 
