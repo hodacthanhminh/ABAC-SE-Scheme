@@ -1,3 +1,5 @@
+from io import BytesIO
+import pickle
 from typing import Union
 from pydantic import BaseModel
 import requests
@@ -6,7 +8,7 @@ import sys
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Form, HTTPException, UploadFile, File
 from fastapi.staticfiles import StaticFiles
 from requests import request
 # class/funcs
@@ -14,7 +16,7 @@ from se.searchscheme import PSE
 from se.contants import d, L
 from se.genkey import read_key
 from se.utils import NumpyArrayEncoder
-from abe.utils import loadObject, remove_unuse_key, groupObj
+from abe.utils import loadObject, remove_unuse_key, groupObj, bytesToObject
 from abe.decryptDocument import DecryptDocument
 
 parent_dir_name = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
@@ -50,7 +52,7 @@ def setHeader():
 
 class SearchBody(BaseModel):
     keywords: list
-    key: str
+    # key: str
     basicScheme: Union[bool, None] = True
     andQuery: Union[bool, None] = True
 
@@ -61,32 +63,39 @@ class User(BaseModel):
 
 
 @app.post("/login")
-def get_authen(body: User):
+def get_authen(username=Form(), password=Form(), upload_file: UploadFile = File()):
+    attr = json.load(upload_file.file)
     response = requests.post(
         url="{}/login".format(BACKEND_IP),
-        data={"username": body.username, "password": body.password})
+        data={"username": username, "password": password, "attribute": json.dumps(attr)})
+    print(response.status_code)
+    if (response.status_code == 401 or response.status_code == 500):
+        raise HTTPException(status_code=401, detail=response.text)
     token = json.loads(response.text)
     update_token = '{} {}'.format(token["token_type"], token["access_token"])
-    print(update_token)
     setToken(update_token)
     return {"detail": "Login Success", "data": token}
 
 
 @app.post("/search")
-def generate_trapdoor(body: SearchBody):
+def generate_trapdoor(
+        keywords: list = Form(),
+        basicScheme: bool = Form(),
+        andQuery: bool = Form(),
+        key: UploadFile = File()):
     se = PSE(d, L)
     try:
-        se.set_key(key_path="./storage/256/key/{}.json".format(body.key))
+        # se.set_key(key_path="storage/256/key/{}.json".format(body.key))
+        se.set_key(key.file)
     except:
         raise HTTPException(status_code=500, detail="CANNOT READ KEY")
-    basic = body.basicScheme
-    andQ = body.andQuery
+    basic = basicScheme
+    andQ = andQuery
+    keywords = keywords[0].split(',')
     se.set_detail(basic, andQ)
-    se.insert_query(body.keywords)
+    se.insert_query(keywords)
     trapdoor = se.get_trapdoor()
-    data = {'trapdoor': json.dumps(trapdoor, cls=NumpyArrayEncoder),
-            'key': body.key, 'basic': basic, 'andQ': andQ}
-    print(data["key"])
+    data = {'trapdoor': json.dumps(trapdoor, cls=NumpyArrayEncoder),'key': 'key256-01','basic': basic, 'andQ': andQ}
     response = requests.post(url="{}/search".format(BACKEND_IP), json=data, headers=Headers)
     return json.loads(response.text)
 
@@ -110,16 +119,14 @@ class DecryptRequest(BaseModel):
 
 
 @app.post("/decrypt_docunment")
-def decrypt_document(body: DecryptRequest):
-    user_attribute = loadObject(body.user_path)
+def decrypt_document(doc: UploadFile = File(), user_path: UploadFile = File()):
     ddc = DecryptDocument(groupObj)
-    os_path = os.path.join(os.getcwd(), body.document_path)
-    with open(os_path, "r") as f:
-        document = json.load(f)
-        document_id = document['id']
-        f.close()
+    document = json.load(doc.file)
+    document_id = document['id']
+    temp = pickle.load(user_path.file)
+    user_key = bytesToObject(temp, groupObj)
     ddc.set_GPP(GPP_IP)
-    plaint_text = ddc.get_result(document, user_attribute)
+    plaint_text = ddc.get_result(document, user_key)
     storage_path = 'storage/searchResult/decrypted/{}.json'.format(document_id)
     os_path = os.path.join(os.getcwd(), storage_path)
     with open(os_path, "w") as f:

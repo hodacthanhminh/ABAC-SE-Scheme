@@ -25,7 +25,7 @@ class BuildIndex:
         word_padding = padding(word, self.dummies)
         for x in range(0, len(word_padding)):
             pos_x = hash_F(word_padding[x], self.kf)
-            p[pos_x] = p[pos_x] / self.primes[x]
+            p[pos_x] = p[pos_x] * self.primes[x]
         p = update_random_vector(p, self.primes)
         return p
 

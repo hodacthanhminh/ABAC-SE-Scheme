@@ -13,13 +13,15 @@ def filter_text(text: str):
 def new_keyword(keyword):
     new_keyword = []
     for x in keyword:
-        new_keyword.append(filter_text(x))
+        new = filter_text(x)
+        if len(new) > 0:
+            new_keyword.append(new)
     return new_keyword
 
 
 if __name__ == "__main__":
-    path = os.path.join(os.getcwd(), 'keyword')
-    new_path = os.path.join(os.getcwd(), 'local', 'keyword')
+    path = os.path.join(os.getcwd(), 'storage', 'keyword')
+    new_path = os.path.join(os.getcwd(), 'storage', 'keyword')
     for filename in os.listdir(path):
         with open(os.path.join(path, filename), 'r') as f:
             data = json.load(f)

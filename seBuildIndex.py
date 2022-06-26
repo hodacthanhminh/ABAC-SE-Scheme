@@ -62,3 +62,6 @@ if __name__ == "__main__":
     df['encrypt_index'] = list(map(buildindex.main, df['keyword']))
     df = df.drop(columns=['keyword'])
     genSearhFile(df, key_id, out_dir)
+
+
+# python3 seBuildIndex.py - p storage/256/key - i 256-01 storage/256/index
