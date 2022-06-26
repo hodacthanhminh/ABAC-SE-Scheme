@@ -38,6 +38,7 @@ INDEX_CONTAINER = os.environ.get("INDEX_CONTAINER")
 AA1_IP = os.environ.get("AA1_IP")
 AA2_IP = os.environ.get("AA2_IP")
 AA3_IP = os.environ.get("AA3_IP")
+GPP_IP = os.environ.get("GPP_IP")
 
 
 class Settings(BaseSettings):
@@ -141,6 +142,14 @@ def login(attribute=Form(), data: OAuth2PasswordRequestForm = Depends()):
 @ app.get("/")
 def root():
     return {"Helllo": "Hello World!"}
+
+
+@ app.get("/GPP")
+def get_gpp():
+    response = requests.get(GPP_IP)
+    if response.status_code > 500:
+        raise HTTPException(status_code=500, detail="INTERNAL SERVER ERROR")
+    return {"GPP": response.text}
 
 
 @ app.get("/key")
