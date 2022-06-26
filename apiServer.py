@@ -1,5 +1,4 @@
 # sys libs
-from urllib import response
 import uuid
 import os
 import sys
@@ -13,7 +12,7 @@ import pandas as pd
 from typing import Union
 from pydantic import BaseModel, UUID4, BaseSettings
 import requests
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, Form, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_login import LoginManager
@@ -82,7 +81,7 @@ initadd({'email': 'khanh', 'password': 'khanh', 'id': uuid.uuid4()})
 initadd({'email': 'trung', 'password': 'trung', 'id': uuid.uuid4()})
 
 
-def verifyattr(uname: str, attribute: dict):
+def verifyattr(uname: str, attribute: str):
     data = json.loads(attribute)
     result = [None, None, None]
     for i in data:
@@ -114,17 +113,17 @@ class User(UserCreate):
 
 
 @app.post(TOKEN_URL)
-def login(attribute: str, data: OAuth2PasswordRequestForm = Depends()):
+def login(attribute=Form(), data: OAuth2PasswordRequestForm = Depends()):
     email = data.username
     password = data.password
     user = get_user(email)
-    verify = verifyattr(email,attribute)
+    # verify = verifyattr(email, attribute)
     if not user:
         raise InvalidCredentialsException  # you can also use your own HTTPException
     elif password != user['password']:
         raise InvalidCredentialsException
-    elif not verify:
-        raise InvalidCredentialsException
+    # elif not verify:
+    #     raise InvalidCredentialsException
     access_token = manager.create_access_token(
         data=dict(sub=email)
     )
