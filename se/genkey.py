@@ -1,5 +1,6 @@
 # libs
 import json
+from typing import BinaryIO
 import pandas as pd
 import os
 import os.path
@@ -27,9 +28,19 @@ class GenKey:
             filehandle.close()
 
 
-def read_key(key_path) -> tuple:
+def read_key(key_path: str) -> tuple:
     path = os.path.join(os.getcwd(), key_path)
     key = pd.read_json(path, orient='records')
+    data = json.loads(key['data'][0])
+    sk = tuple(data['sk'])
+    primes = data['primes']
+    dummies = data['dummies']
+    kf = bytes(data['kf'], 'latin1')
+    return (sk, dummies, primes, kf)
+
+
+def read_key_file(key_path: BinaryIO) -> tuple:
+    key = pd.read_json(key_path, orient='records')
     data = json.loads(key['data'][0])
     sk = tuple(data['sk'])
     primes = data['primes']

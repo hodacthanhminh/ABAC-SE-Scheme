@@ -86,7 +86,7 @@ def generate_trapdoor(
     se = PSE(d, L)
     try:
         # se.set_key(key_path="storage/256/key/{}.json".format(body.key))
-        se.set_key(key.file)
+        se.set_key_file(key.file)
     except:
         raise HTTPException(status_code=500, detail="CANNOT READ KEY")
     basic = basicScheme
