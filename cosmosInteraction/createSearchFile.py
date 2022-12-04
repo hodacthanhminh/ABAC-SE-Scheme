@@ -18,7 +18,7 @@ if __name__ == "__main__":
     from cosmosMethod import CosmosClass
     cosmos_instance = CosmosClass(ENDPOINT, KEY, DATABASE_NAME)
     cosmos_instance.set_container(SEARCH_CONTAINER)
-    path = os.path.join(os.getcwd(), 'local', 'search')
+    path = os.path.join(os.getcwd(), 'storage', 'search')
     for filename in os.listdir(path):
         with open(os.path.join(path, filename), 'r') as f:
             json_data = json.load(f)

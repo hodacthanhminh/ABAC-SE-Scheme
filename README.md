@@ -26,4 +26,19 @@ docker build -t ${image_name} .
 docker run -d --name ${container_name} -p 80:80 ${image_name}
 ```
 
+# .env needed 
+
+```
+ENDPOINT = '${CosmosDB Endpoint}'
+KEY = '${API CosmosDB key}'
+DATABASE_NAME = '${CosmosDB DatabaseName}'
+INDEX_CONTAINER = '${Index container of DatabaseName}'
+DOCUMENT_CONTAINER = '${Document container of DatabaseName}'
+GPP_IP = 'http://localhost:8000/GPP'
+AA1_IP = 'http://localhost:8081/abe'
+AA2_IP = 'http://localhost:8082/abe'
+AA3_IP = 'http://localhost:8083/abe'
+SECRET = '${login Secret token}'
+```
+
 

@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 parent_dir_name = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(parent_dir_name)
 
-dotenv_path = join(dirname(__file__), '.env.prod')
+dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 ENDPOINT = os.environ.get("ENDPOINT")
 KEY = os.environ.get("KEY")
