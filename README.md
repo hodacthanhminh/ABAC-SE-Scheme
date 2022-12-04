@@ -21,9 +21,13 @@ sudo ./install.sh
 # Using docker 
 ```
 // build image
-docker build -t ${image_name} .
+docker build -f ${docker file} -t ${image_name} .
 // run image
-docker run -d --name ${container_name} -p 80:80 ${image_name}
+docker run -d --name ${container_name} -p ${publishPort}:${hostPort} ${image_name}
+```
+# Using docker compose
+```
+docker compose up
 ```
 
 # .env needed 

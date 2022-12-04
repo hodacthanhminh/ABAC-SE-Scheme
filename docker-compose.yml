@@ -2,11 +2,15 @@ version: '3'
 services:
   server: 
     # will build ./docker/server/Dockerfile
-    build: ./docker/server
+    build: 
+      context: .
+      dockerfile: docker/server/Dockerfile
     ports:
      - "9000:9000"
   user:
     # will build ./docker/user/Dockerfile
-    build: ./docker/user
+    build: 
+      context: .
+      dockerfile: docker/user/Dockerfile
     ports:
-      - "3306:3306"
+      - "3000:3000"
