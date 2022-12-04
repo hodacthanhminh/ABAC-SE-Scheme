@@ -21,4 +21,5 @@ export_json.json
 charm/
 
 .env
+*.txt
 

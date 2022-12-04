@@ -139,6 +139,20 @@ def login(attribute=Form(), data: OAuth2PasswordRequestForm = Depends()):
     return {'access_token': access_token, 'token_type': 'bearer'}
 
 
+class UserAuthentication(BaseModel):
+    username: str
+    password: str
+    attribute: list
+
+
+@ app.post("/authentication")
+def authentication_user(user: UserAuthentication):
+
+    verify = request.post()
+
+    return
+
+
 @ app.get("/")
 def root():
     return {"Helllo": "Hello World!"}
@@ -200,6 +214,7 @@ async def search_calculation(search_item: SearchItem, user=Depends(manager)):
             se.set_index(index)
             se.set_search()
         result = se.get_result()
+        print(result)
         if len(result) == 0:
             return HTTPException(status_code=404, detail="NOT FOUND")
         return {'document_match': result}

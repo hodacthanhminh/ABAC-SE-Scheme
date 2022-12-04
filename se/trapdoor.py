@@ -26,11 +26,11 @@ class TrapDoor:
         for x in range(len(word_padding)):
             if (word_padding[x] != "*"):
                 pos_x = hash_F(word_padding[x], self.kf)
-                q[pos_x] = q[pos_x] * self.primes[x]
-            else:
-                for y in string.ascii_lowercase:
-                    pos_xy = hash_F(y, self.kf)
-                    q[pos_xy] = q[pos_xy]*self.primes[x]
+                q[pos_x] = q[pos_x] / self.primes[x]
+            # else:
+            #     for y in string.ascii_lowercase:
+            #         pos_xy = hash_F(y, self.kf)
+            #         q[pos_xy] = q[pos_xy]*self.primes[x]
         q = update_random_vector(q, self.primes)
         return q
 

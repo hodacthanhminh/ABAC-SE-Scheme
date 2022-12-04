@@ -2,7 +2,7 @@
 import numpy as np
 import json
 # class/funcs
-from .genkey import read_key, GenKey
+from .genkey import read_key, GenKey, read_key_file
 from .search import Search
 from .trapdoor import TrapDoor
 
@@ -15,6 +15,9 @@ class PSE:
 
     def set_key(self, key_path):
         self.SK = read_key(key_path)
+
+    def set_key_file(self, key):
+        self.SK = read_key_file(key)
 
     def set_index(self, index):
         self.Index = index['encrypt_index']
