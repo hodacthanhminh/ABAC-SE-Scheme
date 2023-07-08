@@ -10,15 +10,17 @@
 ## Context
 
 **Thread Modal**
+
 ![](/assets/theardModal.png)
 
 1. Untrusted Third-party (Cloud)
 2. Adversary:
-  - Interfere with the communication process between stakeholders.
-  - Impersonate related parties.
-  - Attack on the storage side (cloud).
+    - Interfere with the communication process between stakeholders.
+    - Impersonate related parties.
+    - Attack on the storage side (cloud).
 
 **Propose Modal**
+
 ![](/assets/proposeModal.png)
 
 ## Implementation Details
@@ -26,15 +28,20 @@
 
 ### Attribute-base Access Control Scheme
 **Algorithm**
+
 ![](/assets/abacScheme.png)
 
 ### Searchable Encryption Scheme
 **Algorithm** 
-![Algorithm](/assets/seScheme.png)
+
+![](/assets/seScheme.png)
+
 **Diagram**
+
 ![](/assets/seSchemeDiagram.png)
 
 ### Implementation Structure
+
 ![](/assets/architecture.png)
 
 ## Keywords
