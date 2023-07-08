@@ -6,16 +6,27 @@
 
 ## Abstraction
 
-## Context
-![](/assets/proposeModal.png)
+## Context and Thread Modals
 
-### Thread Modals
+**Thread Modal**
 ![](/assets/theardModal.png)
 
-### Searchable Encryption Diagram
+## Implementation Details
+
+### Scheme 
+
+### Attribute-base Access Control
+**Algorithm**
+![](/assets/abacScheme.png)
+
+#### Searchable Encryption
+**Algorithm** 
+![Algorithm](/assets/seScheme.png)
+**Diagram**
 ![](/assets/seSchemeDiagram.png)
 
-
+### Propose Modal
+![](/assets/proposeModal.png)
 ### Implementation Structure
 ![](/assets/architecture.png)
 
